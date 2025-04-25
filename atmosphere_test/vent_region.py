@@ -4,7 +4,8 @@
 
 import run_globals
 
-BASE_PATH='/Users/paxton/git/quail_volcano'
+# Modify base path for depending on your file structure.
+BASE_PATH = "/Users/paxton/git"
 
 Numerics = {
 	"SolutionOrder" : run_globals.ElementOrder2D,
@@ -17,7 +18,7 @@ Numerics = {
 }
 
 Mesh = {
-	"File" : f"{BASE_PATH}/scenarios/meshes/{run_globals.mesh_prefix}1.msh",
+	"File" : f"{BASE_PATH}/quail_volcano/scenarios/meshes/{run_globals.mesh_prefix}1.msh",
 }
 
 Output = {

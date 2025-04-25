@@ -79,7 +79,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 }
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_rad_5_v22_conduit',              # Output filename
+ 'Prefix': 'tungurahua_rad_5_v23_conduit',              # Output filename
  'WriteInitialSolution': True,
  'WriteInterval': 100,                                   # Output frequency (this many timesteps pass before file is written)
 }
@@ -155,11 +155,8 @@ BoundaryConditions = {
         # 'solubility_n': 0.5,                          # Henry's law exponent
 },  
   # For running serial, using p boundary condition:
- #'x2': {'BCType': 'PressureOutlet1D',                   # Pressure outlet boundary condition (automatically chokes if needed)
- #       'p': 100000.0,                  # Boundary pressure (if flow not choked) -- with scale height factor
- #       },
-'x2': {'BCType': 'MultiphasevpT2D1D',
-        'bkey': 'vent'
+ 'x2': {'BCType': 'PressureOutlet1D',                   # Pressure outlet boundary condition (automatically chokes if needed)
+        'p': 100000.0,                  # Boundary pressure (if flow not choked) -- with scale height factor
         },
   # For running in parallel, the following boundary condition type is needed:
 #    'x2': {'BCType': 'MultiphasevpT1D1D',
@@ -167,14 +164,7 @@ BoundaryConditions = {
 }
 
 # Linked parallel solvers. If running in serial, leave as empty list.
-
-# Linked parallel solvers. If running in serial, leave as empty list.
-LinkedSolvers = [
-  {
-    "DeckName": "vent_region.py",
-    "BoundaryName": "vent", # set equal to the "bkey" param of a MultiphasevpT2D1D BoundaryCondition
-  },
-]
+LinkedSolvers = []
 
 # A parallel solver would have multiple input files like this one, and they would
 # be linked as follows:
@@ -183,6 +173,6 @@ LinkedSolvers = [
 
 TimeStepping = {'FinalTime': 1, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 10000,# Number of timesteps to run for
+ 'NumTimeSteps': 9000,# Number of timesteps to run for
  'TimeStepper': 'Strang', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }
