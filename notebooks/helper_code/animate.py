@@ -24,7 +24,7 @@ from matplotlib import animation
 from processing import readwritedatafiles
 
 
-def animate_conduit_pressure(solver_from_i, iterations=100, viscosity_index=2, wall_friction_index=1, p0=4.1, x_min=-1000, x_max=0, max_speed_of_sound=1000, max_pressure=12, max_velocity=1, slip_final = 3.5, max_slip=20, max_tau=0.5, max_viscosity=10, max_water=1, max_density=2.6e3):
+def animate_conduit_pressure(solver_from_i, iterations=100, viscosity_index=2, wall_friction_index=1, p0=4.1, x_min=-1000, x_max=0, max_speed_of_sound=1000, max_pressure=12, max_velocity=1, slip_final = 3.5, max_slip=20, max_tau=0.5, max_viscosity=10, max_water=1, max_density=2.6e3, max_fragmentation=600, max_crystal=600):
 	"""This function takes in a folder, file prefix, and number of iterations and returns an animation of various state variables in the conduit over time.
 	
 	Parameters
@@ -51,9 +51,9 @@ def animate_conduit_pressure(solver_from_i, iterations=100, viscosity_index=2, w
 	ax7 = fig.add_subplot(527, autoscale_on=False, \
 							xlim=(x_max,x_min), ylim=(0,max_density))
 	ax8 = fig.add_subplot(528, autoscale_on=False, \
-							xlim=(x_max,x_min), ylim=(-1,150))
+							xlim=(x_max,x_min), ylim=(0,max_crystal))
 	ax9	= fig.add_subplot(529, autoscale_on=False, \
-							xlim=(x_max,x_min), ylim=(0,300))	
+							xlim=(x_max,x_min), ylim=(0,max_fragmentation))	
 	ax10 = fig.add_subplot(5,2,10, autoscale_on=False, \
 							xlim=(x_max,x_min), ylim=(0,max_tau))
 
