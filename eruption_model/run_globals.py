@@ -1,7 +1,7 @@
 # Global parameters that are relevant to multiple input files 
 
 ElementOrder1D = 0
-ElementOrder2D = 0
+ElementOrder2D = 1
 InitialCondition = {
 	"Function" : "IsothermalAtmosphere",
   "h0": -5000,

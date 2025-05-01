@@ -83,9 +83,9 @@ def animate_conduit_pressure(solver_from_i, iterations=100, viscosity_index=2, w
 	tau_line, = ax10.plot([], [], label="tau slip")
 	tau_viscous_line, = ax10.plot([], [], label="tau viscous")
 
-	ax2.axhline(y=0, color='k', linestyle='dashed')
-	ax6.axhline(y=slip_final, color='k', linestyle='dashed', label="predicted slip")
-	ax.axhline(y=p0, color='k', linestyle='dashed', label="predicted p0")
+	#ax2.axhline(y=0, color='k', linestyle='dashed')
+	#ax6.axhline(y=slip_final, color='k', linestyle='dashed', label="predicted slip")
+	#ax.axhline(y=p0, color='k', linestyle='dashed', label="predicted p0")
 
 	#ax2.legend(loc="upper right")
 	ax5.legend(loc="upper right")
@@ -102,7 +102,7 @@ def animate_conduit_pressure(solver_from_i, iterations=100, viscosity_index=2, w
 	ax6.set_ylabel("Slip (slip / rho_mix) [m]")
 	ax7.set_ylabel("Density [kg/m^3]")
 	ax8.set_ylabel("Crystal partial density [kg/m^3]")
-	ax9.set_ylabel("Fragmentation partial density [kg/m^3]")
+	ax9.set_ylabel("Fragmentation [kg/m^3]")
 	ax10.set_ylabel("Tau [MPa]")
 
 	time_template = 'time = %.2f [s]'

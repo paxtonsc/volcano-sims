@@ -34,15 +34,29 @@ Physics = {'ConvFluxNumerical': 'LaxFriedrichs',
  'tau_d': Exception("Deprecated")     # Unused. For exsolution timescale (s), see SourceTerms below.
 }
 
+# Set common parameters
+p_chamber = 25174368.35
+T_chamber = 950 + 273.15 # 1223.15
+yC = 0.4   # Crystal mass fraction
+yWt = 0.006 # Total water mass fraction
+
+chi_water = (1.0 - yC) * yWt / (1 - yWt)
+radio = 5
+f_plug = 1.9e8
+len_plug = 50
+t_plug = f_plug / (2*np.pi*radio*len_plug)
+trac_par = 2*t_plug/radio
+
+
 SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
              'gravity': 9.8,
              'source_treatment': 'Explicit'},
  'source2': {'Function': 'FrictionVolFracVariableMu',   # Friction source term for given conduit radius
-             'use_default_viscosity': False,
-             'default_viscosity': 1e7,
-             'conduit_radius': 5.,
-             'viscosity_factor': 1/5,#1/20,
-             'source_treatment': 'Explicit',
+            'use_default_viscosity': True,
+            'default_viscosity': 1e5,
+            'conduit_radius': 5.,
+            'viscosity_factor': 1/5,#1/20,
+            'source_treatment': 'Explicit',
             'model_plug': True,
             'plug_boundary_0': -50,
              },
@@ -71,7 +85,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
     "conduit_radius": 5, 
     "tau_peak": 1e4,
     "tau_r": 0  ,
-    "D_c": 2,
+    "D_c": 1,
     "plug_boundary_0": -50,
     "use_constant_tau": True,
     "exponential_tau": False,
@@ -79,22 +93,11 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 }
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_rad_5_v23_conduit',              # Output filename
+ 'Prefix': 'tungurahua_rad_5_v19_conduit',              # Output filename
  'WriteInitialSolution': True,
- 'WriteInterval': 100,                                   # Output frequency (this many timesteps pass before file is written)
+ 'WriteInterval': 40,                                   # Output frequency (this many timesteps pass before file is written)
 }
 
-# Set common parameters
-p_chamber = 4519097.42
-T_chamber = 950 + 273.15 # 1223.15
-yC = 0.4    # Crystal mass fraction
-yWt = 0.03  # Total water mass fraction
-chi_water = (1.0 - yC) * yWt / (1 - yWt)
-radio = 5
-f_plug = 1.9e8
-len_plug = 50
-t_plug = f_plug / (2*np.pi*radio*len_plug)
-trac_par = 2*t_plug/radio
 
 # Define the cosine taper function
 def cosine_taper(x, x1, x2, y1, y2):
@@ -121,10 +124,11 @@ InitialCondition = {'Function': 'StaticPlug',          # Specify to call physics
 
  # Define the functions using cosine taper
  'traction_fn': lambda x: cosine_taper(x, x1, x2, 0, -trac_par),
- 'yWt_fn': lambda x: cosine_taper(x, x1, x2, yWt, 0.02),
- 'yC_fn': lambda x: cosine_taper(x, x1, x2, yC, 0.8),
- 'T_fn': lambda x: cosine_taper(x, x1, x2, T_chamber, 930 + 273.15),
+ 'yWt_fn': lambda x: cosine_taper(x, x1, x2, yWt, 0.),
+ 'yC_fn': lambda x: cosine_taper(x, x1, x2, yC, 0.95),
  'yF_fn': lambda x: cosine_taper(x, x1, x2, 0, 1),
+ 'T_fn': lambda x: cosine_taper(x, x1, x2, T_chamber, T_chamber - 20),
+
 
  # p_vent is set slightly above 1e5 to make sure flow is outflow
  'enforce_p_vent': None,                    # If not None, Scales traction_fn iteratively so that vent pressure has this value
@@ -165,14 +169,13 @@ BoundaryConditions = {
 
 # Linked parallel solvers. If running in serial, leave as empty list.
 LinkedSolvers = []
-
 # A parallel solver would have multiple input files like this one, and they would
 # be linked as follows:
 # LinkedSolvers = [{'BoundaryName': 'comm2D1D',
 #                   'DeckName': 'vent_region.py'}]
 
-TimeStepping = {'FinalTime': 1, # Final 
+TimeStepping = {'FinalTime': 10, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 9000,# Number of timesteps to run for
+ 'NumTimeSteps': 20000,# Number of timesteps to run for
  'TimeStepper': 'Strang', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }
