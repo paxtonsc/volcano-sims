@@ -17,11 +17,11 @@ Numerics = {
 }
 
 Mesh = {
-	"File" : f"{BASE_PATH}/scenarios/meshes/{run_globals.mesh_prefix}1.msh",
+	"File" : f"{BASE_PATH}/scenarios/meshes/{run_globals.mesh_prefix}3.msh",
 }
 
 Output = {
-	"Prefix" : f"{run_globals.output_file_prefix}_atm1",
+	"Prefix" : f"{run_globals.output_file_prefix}_atm3",
 	"WriteInterval" : run_globals.write_interval_2D,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
@@ -53,42 +53,33 @@ ExactSolution = InitialCondition.copy()
 
 # Set boundary conditions (and provisionally add impedance BC at outer boundary)
 BoundaryConditions = {
-	"r1" : {
-		"BCType" : "LinearizedImpedance2D",
-	},
-	"ground" : {
+	"ground3" : {
 		"BCType" : "SlipWall",
 	},
-	"flare" : {
+	"symmetry3" : {
 		"BCType" : "SlipWall",
 	},
-	"pipewall" : {
-		"BCType" : "SlipWall",
+	"r3" : {
+		"BCType" : "MultiphasevpT2D2D",
+		"bkey": "r3",
 	},
-	"x2" : {
-		"BCType" : "MultiphasevpT2D1D",
-		"bkey": "vent",
-	},
-	"symmetry" : {
-		"BCType" : "SlipWall",
+	"r2" : {
+		"BCType" : "MultiphasevpT2D2D",
+		"bkey": "r2",
 	},
 }
 
-# Setting to extend atmosphere here
-# When True, attaches simulation r1r2.py to make a bigger 2D domain
-# When False, leaves the impedance boundary condition at r1 as is
-extend_atm = True
+LinkedSolvers = [
+	{
+		"DeckName": "r3r4.py",
+		"BoundaryName": "r3",
+	},
+]
 
-if extend_atm:
-	BoundaryConditions["r1"] = {
-		"BCType" : "MultiphasevpT2D2D",
-		"bkey": "r1"
+extend_atm = False
+
+if not extend_atm:
+	BoundaryConditions["r3"] = {
+		"BCType" : "LinearizedImpedance2D",
 	}
-	LinkedSolvers = [
-		{
-			"DeckName": "r1r2.py",
-			"BoundaryName": "r1",
-		},
-	]
-else:
 	LinkedSolvers = []

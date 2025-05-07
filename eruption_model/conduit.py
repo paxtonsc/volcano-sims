@@ -79,17 +79,17 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 }
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_rad_5_v23_conduit',              # Output filename
+ 'Prefix': 'tungurahua_rad_5_v25_conduit',              # Output filename
  'WriteInitialSolution': True,
- 'WriteInterval': 100,                                   # Output frequency (this many timesteps pass before file is written)
+ 'WriteInterval': 150,                                   # Output frequency (this many timesteps pass before file is written)
 }
 
 # Set common parameters
 # Set common parameters
-p_chamber = 25174368.35
+p_chamber = 20628419.49
 T_chamber = 950 + 273.15 # 1223.15
 yC = 0.4   # Crystal mass fraction
-yWt = 0.006 # Total water mass fraction
+yWt = 0.008 # Total water mass fraction
 
 chi_water = (1.0 - yC) * yWt / (1 - yWt)
 radio = 5
@@ -186,5 +186,5 @@ LinkedSolvers = [
 TimeStepping = {'FinalTime': 15, # Final 
  'InitialTime': 0.0,
  'NumTimeSteps': 15000,# Number of timesteps to run for
- 'TimeStepper': 'Strang', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
+ 'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }

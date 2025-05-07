@@ -1,7 +1,7 @@
 # Global parameters that are relevant to multiple input files 
 
 ElementOrder1D = 0
-ElementOrder2D = 1
+ElementOrder2D = 0
 InitialCondition = {
 	"Function" : "IsothermalAtmosphere",
   "h0": -5000,
@@ -11,8 +11,8 @@ InitialCondition = {
 }
 
 # Output file prefix (no trailing underscore)
-output_file_prefix = "test_infrasound_v22"
-write_interval_2D = 100
+output_file_prefix = "test_infrasound_v25"
+write_interval_2D = 150
 
 # Mesh file prefix (no trailing underscore)
 # There are some meshes in the scenarios/meshes/ folder
