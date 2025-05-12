@@ -112,10 +112,10 @@ InitialCondition = {'Function': 'StaticPlug',          # Specify to call physics
  'p_chamber': p_chamber,
   # Magma properties
  'K_magma': 1e10,
- 'c_v_magma': 1000.0,
+ 'c_v_magma': 1e3,
  'neglect_edfm': True,
- 'p0_magma': 35999999.99999999,
- 'rho0_magma': 2600.0,
+ 'p0_magma': 36e6,
+ 'rho0_magma': 2.6e3,
  # Solubility properties
  'solubility_k': Physics["Solubility"]["k"],
  'solubility_n': Physics["Solubility"]["n"],
@@ -135,12 +135,6 @@ InitialCondition = {'Function': 'StaticPlug',          # Specify to call physics
 
 # This is needed by Quail. This is not the exact solution, just something callable.
 ExactSolution = {'Function': 'RiemannProblem'}
-
-# Set boundary conditions here.
-#BoundaryConditions = {
-#  'x1': {'BCType': 'SlipWall',   # Inlet boundary condition
-                          # Henry's law exponent
-#},
     
 BoundaryConditions = {
   'x1': {'BCType': 'PressureStableLinearizedInlet1D',   # Inlet boundary condition
@@ -155,20 +149,12 @@ BoundaryConditions = {
         # 'approx_mass_fracs': False,                   # Compute exactly the mass fraction of inlet fluid
         # 'solubility_k': 5e-06,                        # Henry's law coefficient
         # 'solubility_n': 0.5,                          # Henry's law exponent
-},  
-  # For running serial, using p boundary condition:
- #'x2': {'BCType': 'PressureOutlet1D',                   # Pressure outlet boundary condition (automatically chokes if needed)
- #       'p': 100000.0,                  # Boundary pressure (if flow not choked) -- with scale height factor
- #       },
+        },  
 'x2': {'BCType': 'MultiphasevpT2D1D',
         'bkey': 'vent'
         },
-  # For running in parallel, the following boundary condition type is needed:
-#    'x2': {'BCType': 'MultiphasevpT1D1D',
-        #   'bkey': 'comm2D1D'}
 }
 
-# Linked parallel solvers. If running in serial, leave as empty list.
 
 # Linked parallel solvers. If running in serial, leave as empty list.
 LinkedSolvers = [
@@ -178,10 +164,6 @@ LinkedSolvers = [
   },
 ]
 
-# A parallel solver would have multiple input files like this one, and they would
-# be linked as follows:
-# LinkedSolvers = [{'BoundaryName': 'comm2D1D',
-#                   'DeckName': 'vent_region.py'}]
 
 TimeStepping = {'FinalTime': 15, # Final 
  'InitialTime': 0.0,

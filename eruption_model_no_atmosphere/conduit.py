@@ -35,10 +35,10 @@ Physics = {'ConvFluxNumerical': 'LaxFriedrichs',
 }
 
 # Set common parameters
-p_chamber = 25174368.35
+p_chamber = 2.0e7 #20628419.49
 T_chamber = 950 + 273.15 # 1223.15
 yC = 0.4   # Crystal mass fraction
-yWt = 0.006 # Total water mass fraction
+yWt = 0.008 # Total water mass fraction
 
 chi_water = (1.0 - yC) * yWt / (1 - yWt)
 radio = 5
@@ -83,9 +83,9 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
     "Function": "FrictionVolSlip",
     "source_treatment": "Explicit", 
     "conduit_radius": 5, 
-    "tau_peak": 1e4,
+    "tau_peak": 1.2e5,
     "tau_r": 0  ,
-    "D_c": 1,
+    "D_c": 10,
     "plug_boundary_0": -50,
     "use_constant_tau": True,
     "exponential_tau": False,
@@ -95,7 +95,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 Output = {'AutoPostProcess': False,
  'Prefix': 'tungurahua_rad_5_v19_conduit',              # Output filename
  'WriteInitialSolution': True,
- 'WriteInterval': 40,                                   # Output frequency (this many timesteps pass before file is written)
+ 'WriteInterval': 100,                                   # Output frequency (this many timesteps pass before file is written)
 }
 
 
@@ -176,6 +176,6 @@ LinkedSolvers = []
 
 TimeStepping = {'FinalTime': 10, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 20000,# Number of timesteps to run for
- 'TimeStepper': 'Strang', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
+ 'NumTimeSteps': 10000,# Number of timesteps to run for
+ 'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }

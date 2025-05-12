@@ -3,15 +3,13 @@
 ElementOrder1D = 0
 ElementOrder2D = 0
 InitialCondition = {
-	"Function" : "IsothermalAtmosphere",
+	"Function" : "HomogeneousAtmosphere",
   "h0": -5000,
-  "hmax": 15000,
   "p_atm": 1.7666863813 * 1e5,
-  "massFracM": 1e-5,
 }
 
 # Output file prefix (no trailing underscore)
-output_file_prefix = "test_infrasound_v25"
+output_file_prefix = "test_infrasound_v26"
 write_interval_2D = 150
 
 # Mesh file prefix (no trailing underscore)

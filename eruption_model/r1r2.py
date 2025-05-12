@@ -34,11 +34,11 @@ Physics = {
 
 # Source terms: exsolution, fragmentation are not turned on
 SourceTerms = {
-	"source1": {
-		"Function" : "GravitySource",
-		"gravity": 9.8,
-		'source_treatment': 'Explicit',
-	},
+	#"source1": {
+	#	"Function" : "GravitySource",
+	#	"gravity": 9.8,
+	#	'source_treatment': 'Explicit',
+	#},
 	"source2": {
 		"Function" : "CylindricalGeometricSource",
 		'source_treatment': 'Explicit',
