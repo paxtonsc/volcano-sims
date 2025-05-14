@@ -35,10 +35,10 @@ Physics = {'ConvFluxNumerical': 'LaxFriedrichs',
 }
 
 # Set common parameters
-p_chamber = 2.0e7 #20628419.49
+p_chamber = 2.4e7 #20628419.49
 T_chamber = 950 + 273.15 # 1223.15
 yC = 0.4   # Crystal mass fraction
-yWt = 0.008 # Total water mass fraction
+yWt = 0.006 # Total water mass fraction
 
 chi_water = (1.0 - yC) * yWt / (1 - yWt)
 radio = 5
@@ -93,7 +93,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 }
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_rad_5_v19_conduit',              # Output filename
+ 'Prefix': 'tungurahua_rad_5_v20_conduit',              # Output filename
  'WriteInitialSolution': True,
  'WriteInterval': 100,                                   # Output frequency (this many timesteps pass before file is written)
 }
