@@ -62,7 +62,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
              },
  'source3': {'Function': 'ExsolutionSource',            # Exsolution source
              'source_treatment': 'Explicit',
-             'tau_d': 0.001,                             # Exsolution timescale
+             'tau_d': 1,                             # Exsolution timescale
              },
  "source4": {
         "Function": "FragmentationStrainRateSource",
@@ -83,8 +83,8 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
     "Function": "FrictionVolSlip",
     "source_treatment": "Explicit", 
     "conduit_radius": 5, 
-    "tau_peak": 1.2e5,
-    "tau_r": 0  ,
+    "tau_peak": 1.3e5,
+    "tau_r": 0,
     "D_c": 10,
     "plug_boundary_0": -50,
     "use_constant_tau": True,
@@ -131,7 +131,7 @@ InitialCondition = {'Function': 'StaticPlug',          # Specify to call physics
 
 
  # p_vent is set slightly above 1e5 to make sure flow is outflow
- 'enforce_p_vent': None,                    # If not None, Scales traction_fn iteratively so that vent pressure has this value
+ 'enforce_p_vent': 1e5,                    # If not None, Scales traction_fn iteratively so that vent pressure has this value
  # 'is_solve_direction_downward': False,
  }
 
@@ -160,7 +160,7 @@ BoundaryConditions = {
 },  
   # For running serial, using p boundary condition:
  'x2': {'BCType': 'PressureOutlet1D',                   # Pressure outlet boundary condition (automatically chokes if needed)
-        'p': 100000.0,                  # Boundary pressure (if flow not choked) -- with scale height factor
+        'p': 1e5,                  # Boundary pressure (if flow not choked) -- with scale height factor
         },
   # For running in parallel, the following boundary condition type is needed:
 #    'x2': {'BCType': 'MultiphasevpT1D1D',

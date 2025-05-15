@@ -1,9 +1,4 @@
-from slip_imports import *
-
-def solver_from_2D(dom, i):
-    solver_func = get_local_solver_from_index_func("eruption_model", f"test_infrasound_v26_atm{dom}")
-
-    return solver_func(i)
+import numpy as np
 
 def compute_ref_mapping(x_tri):
 	''' Compute jacobian
