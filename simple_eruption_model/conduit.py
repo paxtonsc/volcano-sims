@@ -15,7 +15,7 @@ Numerics = {'AVParameter': 30,
 # elements.
 Mesh = {'ElementShape': 'Segment',
  'File': None,
- 'NumElemsX': 800,
+ 'NumElemsX': 400,
  'xmax': 0,   # Top of the conduit is placed at -150 m for 2D coupling, but you can choose whatever if not coupling to 2D.
  'xmin': -1000.0
 }
