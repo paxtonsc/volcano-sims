@@ -79,9 +79,9 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 }
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_rad_5_v25_conduit',              # Output filename
+ 'Prefix': 'tungurahua_atmosphere_1',              # Output filename
  'WriteInitialSolution': True,
- 'WriteInterval': 150,                                   # Output frequency (this many timesteps pass before file is written)
+ 'WriteInterval': 200,                                   # Output frequency (this many timesteps pass before file is written)
 }
 
 # Set common parameters
