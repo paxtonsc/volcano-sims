@@ -81,7 +81,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 Output = {'AutoPostProcess': False,
  'Prefix': 'tungurahua_atmosphere_1',              # Output filename
  'WriteInitialSolution': True,
- 'WriteInterval': 200,                                   # Output frequency (this many timesteps pass before file is written)
+ 'WriteInterval': 2000,                                   # Output frequency (this many timesteps pass before file is written)
 }
 
 # Set common parameters
@@ -167,6 +167,6 @@ LinkedSolvers = [
 
 TimeStepping = {'FinalTime': 30, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 30000,# Number of timesteps to run for
+ 'NumTimeSteps': 300000,# Number of timesteps to run for
  'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }
