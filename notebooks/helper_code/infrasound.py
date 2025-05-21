@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.interpolate import interp1d
+import matplotlib.tri as tri
 
 T_0 = 288.15 # [K]
 M = 0.02896968 # [kg/mol]
@@ -15,6 +16,8 @@ gamma = 1.4   # Specific heat ratio for air
 def pressure():
     return p_0 * np.exp(-M * g * (SUMMIT_TUNGURAHUA) / (R_0 * T_0)) # [Pa]
 
+
+# (kg/m^3)
 def density():
     T = T_0 - L * (SUMMIT_TUNGURAHUA)
     P = pressure()
@@ -54,40 +57,44 @@ def relative_pressure(t, x, y, t_vec, Q_dot_vec):
     return rho * Q_dot_func(t - r / sound_speed(), t_vec, Q_dot_vec) / ((2/3) * np.pi * 4 * r)
 
 
-def find_elem_ID(x, y, trifinders):
+def find_elem_ID(x, y, trifinder):
   ''' Returns element ID corresponding to given x and y. '''
 
-  trifinders_at_point = [trifinders[0](x, y), trifinders[1](x, y), trifinders[2](x, y)]
-
-  elem_ID = max(trifinders_at_point)
-  index = trifinders_at_point.index(elem_ID)
-
-  return index, elem_ID
+  return trifinder(x, y)
 
 
-def get_p_series(x_target, y_target, solver2D_1, solver2D_2, solver2D_3, trifinders, iterations=100):
+def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100):
 
-  # Find the element ID
-  index, elem_ID = find_elem_ID(x_target, y_target, trifinders)
+    # Find the element ID
+    elem_ID = find_elem_ID(x_target, y_target, trifinder)
 
-  print(f"Element ID for point ({x_target}, {y_target}): {elem_ID}")
+    print(f"Element ID for point ({x_target}, {y_target}): {elem_ID}")
 
-  p_relative_arr = []
-  p0 = None
+    p_relative_arr = []
+    p0 = None
 
-  for i in range(0, iterations):
-      # Get the solver state at the current time step
-      solvers = [solver2D_1(i), solver2D_2(i), solver2D_3(i)]
+    for i in range(0, iterations, 5):
+        # Get the solver state at the current time step
+        solver = solver2D_1(i)
 
-      U = solvers[index].state_coeffs
-      U_target = U[elem_ID:elem_ID+1]
+        U = solver.state_coeffs
 
-      # Compute pressure using the state vector
-      p_target = solvers[index].physics.compute_variable("Pressure", U_target)
+        x_node_elem = solver.mesh.node_coords[solver.mesh.elem_to_node_IDs[elem_ID,:], :]
 
-      if i == 0:
-          p0 = np.average(p_target)
+        # Evaluate state_coeff at the exact point (x_target, y_target)
+        U_target = np.array([tri.CubicTriInterpolator(
+            tri.Triangulation(x_node_elem[:,0],x_node_elem[:,1]), # Create local triangulation using x, y of relevant triangle
+            U[elem_ID, :, i])(x_target,y_target) for i in range(U.shape[-1])])
+        
+        # Pad U_target to the right shape for physics.compute_variable
+        U_target = U_target[np.newaxis, np.newaxis, :]
 
-      p_relative_arr.append(np.average(p_target) - p0)
-  
-  return p_relative_arr
+
+        # Compute pressure using the state vector
+        p_target = np.average(solver.physics.compute_variable("Pressure", U_target))
+        if i == 0:
+            p0 = p_target
+
+        p_relative_arr.append(p_target - p0)
+
+    return p_relative_arr

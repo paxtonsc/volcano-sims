@@ -35,10 +35,11 @@ Physics = {'ConvFluxNumerical': 'LaxFriedrichs',
 }
 
 # Set common parameters
-p_chamber = 2.4e7 #20628419.49
+p_chamber = 2.0e7 #20628419.49
 T_chamber = 950 + 273.15 # 1223.15
 yC = 0.4   # Crystal mass fraction
 yWt = 0.006 # Total water mass fraction
+RADIUS=10
 
 chi_water = (1.0 - yC) * yWt / (1 - yWt)
 radio = 5
@@ -54,7 +55,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
  'source2': {'Function': 'FrictionVolFracVariableMu',   # Friction source term for given conduit radius
             'use_default_viscosity': True,
             'default_viscosity': 1e5,
-            'conduit_radius': 5.,
+            'conduit_radius': RADIUS,
             'viscosity_factor': 1/5,#1/20,
             'source_treatment': 'Explicit',
             'model_plug': True,
@@ -71,7 +72,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
         "k": 0.0001,
         "fragsmooth_scale": 0.010, # This is the smoothing scale that was also in the volume fraction source
         "which_criterion": "both", # This is either "shear" for only using shear strain to determine whether the magma fragments, "tensile" for only using the longitudinal (du/dz) strain rate, or "both" for using the larger of the two strain rates
-        "conduit_radius": 5, # Conduit radius (make sure this is the same as what you provide to the Friction source term!
+        "conduit_radius": RADIUS, # Conduit radius (make sure this is the same as what you provide to the Friction source term!
         'source_treatment': 'Explicit',
     },
 "slip_source": {
@@ -82,10 +83,10 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 "source5": {
     "Function": "FrictionVolSlip",
     "source_treatment": "Explicit", 
-    "conduit_radius": 5, 
-    "tau_peak": 1.3e5,
+    "conduit_radius": RADIUS, 
+    "tau_peak": 6e4,
     "tau_r": 0,
-    "D_c": 10,
+    "D_c": 1,
     "plug_boundary_0": -50,
     "use_constant_tau": True,
     "exponential_tau": False,
@@ -93,7 +94,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 }
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_rad_5_v20_conduit',              # Output filename
+ 'Prefix': 'tungurahua_rad_10_v0_conduit',              # Output filename
  'WriteInitialSolution': True,
  'WriteInterval': 100,                                   # Output frequency (this many timesteps pass before file is written)
 }

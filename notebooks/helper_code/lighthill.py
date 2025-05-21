@@ -37,7 +37,7 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
     src_values = []
     p_t = np.zeros(len(file_index_list))
 
-    for t_idx in file_index_list:
+    for t_idx in range(len(file_index_list)):
         for i in range(len(X)):
             for  j in range(len(Y)):
                 for k in range(len(Z)):
@@ -46,6 +46,7 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
 
                     # distance from source to observation point
                     r = np.linalg.norm(x_obs - y_src)
+					# change?
                     t_ret = t_range[t_idx] - r / c0
 
                     # a little hacky, but ignore any contributions with r the max value of Y

@@ -24,7 +24,7 @@ from matplotlib import animation
 from processing import readwritedatafiles
 
 
-def animate_conduit_pressure(solver_from_i, iterations=100, viscosity_index=2, wall_friction_index=1, p0=4.1, x_min=-1000, x_max=0, max_speed_of_sound=1000, max_pressure=12, max_velocity=1, slip_final = 3.5, max_slip=20, max_tau=0.5, max_viscosity=10, max_water=1, max_density=2.6e3, max_fragmentation=600, max_crystal=600):
+def animate_conduit_pressure(solver_from_i, iterations=100, d_iterations=1, viscosity_index=2, wall_friction_index=1, p0=4.1, x_min=-1000, x_max=0, max_speed_of_sound=1000, max_pressure=12, max_velocity=1, slip_final = 3.5, max_slip=20, max_tau=0.5, max_viscosity=10, max_water=1, max_density=2.6e3, max_fragmentation=600, max_crystal=600):
 	"""This function takes in a folder, file prefix, and number of iterations and returns an animation of various state variables in the conduit over time.
 	
 	Parameters
@@ -217,4 +217,4 @@ def animate_conduit_pressure(solver_from_i, iterations=100, viscosity_index=2, w
 		return pressure_line, velocity_line, sound_speed_line, viscosity_line, total_water_line, exsolved_water_line, new_state_line, rho_line, crystal_line, plug_boundary_line, tau_line, tau_viscous_line, arhoF_line, time_text, pl_text, pr_text, velocity_text, boundary_text, tau_slip_text
 
 	plt.close()
-	return animation.FuncAnimation(fig, animate, np.arange(iterations), blit=False, init_func=init, interval=40)
+	return animation.FuncAnimation(fig, animate, np.linspace(0, iterations, d_iterations, dtype=int), blit=False, init_func=init, interval=40)
