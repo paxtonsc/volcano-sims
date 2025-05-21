@@ -9,8 +9,8 @@ InitialCondition = {
 }
 
 # Output file prefix (no trailing underscore)
-output_file_prefix = "test_infrasound_v28"
-write_interval_2D = int(60000/150)
+output_file_prefix = "test_infrasound_v29"
+write_interval_2D = int(30000/1000)
 
 # Mesh file prefix (no trailing underscore)
 # There are some meshes in the scenarios/meshes/ folder
