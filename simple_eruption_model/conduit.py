@@ -46,20 +46,6 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
              'model_plug': True,
              'plug_boundary_0': -50,
              },
- 'source3': {'Function': 'ExsolutionSource',            # Exsolution source
-             'source_treatment': 'Explicit',
-             'tau_d': 0.01,                             # Exsolution timescale
-             },
- "source4": {
-        "Function": "FragmentationStrainRateSource",
-        "tau_f": 0.003, # This is the fragmentation timescale
-        "G": 1e9,
-        "k": 0.0001,
-        "fragsmooth_scale": 0.010, # This is the smoothing scale that was also in the volume fraction source
-        "which_criterion": "both", # This is either "shear" for only using shear strain to determine whether the magma fragments, "tensile" for only using the longitudinal (du/dz) strain rate, or "both" for using the larger of the two strain rates
-        "conduit_radius": 5, # Conduit radius (make sure this is the same as what you provide to the Friction source term!
-        'source_treatment': 'Explicit',
-    },
 "slip_source": {
     "Function": "SlipSource",
     "source_treatment": "Explicit",
@@ -81,7 +67,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 Output = {'AutoPostProcess': False,
  'Prefix': 'tungurahua_atmosphere_1',              # Output filename
  'WriteInitialSolution': True,
- 'WriteInterval': int(30000/1000),                                   # Output frequency (this many timesteps pass before file is written)
+ 'WriteInterval': int(12000/300),                                   # Output frequency (this many timesteps pass before file is written)
 }
 
 # Set common parameters
@@ -156,17 +142,18 @@ BoundaryConditions = {
 }
 
 
+LinkedSolvers = []
 # Linked parallel solvers. If running in serial, leave as empty list.
-LinkedSolvers = [
-  {
-    "DeckName": "vent_region.py",
-    "BoundaryName": "vent", # set equal to the "bkey" param of a MultiphasevpT2D1D BoundaryCondition
-  },
-]
+#LinkedSolvers = [
+#  {
+#    "DeckName": "vent_region.py",
+#    "BoundaryName": "vent", # set equal to the "bkey" param of a MultiphasevpT2D1D BoundaryCondition
+#  },
+#]
 
 
 TimeStepping = {'FinalTime': 30, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 30000,# Number of timesteps to run for
+ 'NumTimeSteps': 12000,# Number of timesteps to run for
  'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }

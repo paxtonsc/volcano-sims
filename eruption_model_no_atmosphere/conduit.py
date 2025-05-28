@@ -15,7 +15,7 @@ Numerics = {'AVParameter': 30,
 # elements.
 Mesh = {'ElementShape': 'Segment',
  'File': None,
- 'NumElemsX': 400,
+ 'NumElemsX': 1000,
  'xmax': 0,   # Top of the conduit is placed at -150 m for 2D coupling, but you can choose whatever if not coupling to 2D.
  'xmin': -1000.0
 }
@@ -175,7 +175,7 @@ LinkedSolvers = []
 # LinkedSolvers = [{'BoundaryName': 'comm2D1D',
 #                   'DeckName': 'vent_region.py'}]
 
-TimeStepping = {'FinalTime': 10, # Final 
+TimeStepping = {'FinalTime': 20, # Final 
  'InitialTime': 0.0,
  'NumTimeSteps': 10000,# Number of timesteps to run for
  'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval

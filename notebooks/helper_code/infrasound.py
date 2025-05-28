@@ -73,7 +73,7 @@ def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100):
     p_relative_arr = []
     p0 = None
 
-    for i in range(0, iterations, 5):
+    for i in range(0, iterations, 1):
         # Get the solver state at the current time step
         solver = solver2D_1(i)
 
@@ -81,13 +81,16 @@ def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100):
 
         x_node_elem = solver.mesh.node_coords[solver.mesh.elem_to_node_IDs[elem_ID,:], :]
 
-        # Evaluate state_coeff at the exact point (x_target, y_target)
-        U_target = np.array([tri.CubicTriInterpolator(
-            tri.Triangulation(x_node_elem[:,0],x_node_elem[:,1]), # Create local triangulation using x, y of relevant triangle
-            U[elem_ID, :, i])(x_target,y_target) for i in range(U.shape[-1])])
-        
-        # Pad U_target to the right shape for physics.compute_variable
-        U_target = U_target[np.newaxis, np.newaxis, :]
+        try:
+            # Evaluate state_coeff at the exact point (x_target, y_target)
+            U_target = np.array([tri.CubicTriInterpolator(
+                tri.Triangulation(x_node_elem[:,0],x_node_elem[:,1]), # Create local triangulation using x, y of relevant triangle
+                U[elem_ID, :, i])(x_target,y_target) for i in range(U.shape[-1])])
+            
+            # Pad U_target to the right shape for physics.compute_variable
+            U_target = U_target[np.newaxis, np.newaxis, :]
+        except:
+            U_target = U[elem_ID:elem_ID+1]
 
 
         # Compute pressure using the state vector

@@ -2,7 +2,7 @@
 TimeStepping = {
 	"InitialTime"  : 0.0,
 	"FinalTime"    : 20,      # seconds
-	"NumTimeSteps" : 2000,
+	"NumTimeSteps" : 20000,
 	"TimeStepper"  : "RK3SR",
 }
 
@@ -19,8 +19,8 @@ Numerics = {
 }
 
 Output = {
-	"Prefix" : "short_plug_v12",
-	"WriteInterval" : 40,
+	"Prefix" : "short_plug_v15",
+	"WriteInterval" : 200,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
 }
@@ -137,15 +137,15 @@ ExactSolution = {
     "Function": "RiemannProblem",
 }
 
-LinkedSolvers = []
+#LinkedSolvers = []
 
 # Linked parallel solvers. If running in serial, leave as empty list.
-#LinkedSolvers = [
-#  {
-#    "DeckName": "vent_region.py",
-#    "BoundaryName": "vent", # set equal to the "bkey" param of a MultiphasevpT2D1D BoundaryCondition
-#  },
-#]
+LinkedSolvers = [
+  {
+    "DeckName": "vent_region.py",
+    "BoundaryName": "vent", # set equal to the "bkey" param of a MultiphasevpT2D1D BoundaryCondition
+  },
+]
 
 BoundaryConditions = {
     'x1': {
@@ -157,11 +157,11 @@ BoundaryConditions = {
     #    "yWt": 0.0,                    # Mass total water (exsolved + dissolved) per mixture volume
     #    "p_chamber": 10e6,
     #},
-    "x2" : {
-        "BCType" : "PressureOutlet1D",
-        "p": 1e5,
-    },
-    #'x2': {'BCType': 'MultiphasevpT2D1D',
-    #    'bkey': 'vent'
+    #"x2" : {
+    #    "BCType" : "PressureOutlet1D",
+    #    "p": 1e5,
     #},
+    'x2': {'BCType': 'MultiphasevpT2D1D',
+        'bkey': 'vent'
+    },
 }
