@@ -9,11 +9,11 @@ InitialCondition = {
 }
 
 # Output file prefix (no trailing underscore)
-output_file_prefix = "test_infrasound_vertical_conduit"
-write_interval_2D = 400
+output_file_prefix = "vertical_atmosphere_v1"
+write_interval_2D = 50
 
 # Mesh file prefix (no trailing underscore)
 # There are some meshes in the scenarios/meshes/ folder
-# vertical_conduitA1 to vertical_conduitA8 are different parts of the same mesh
+# tungurahuaA1 to tungurahuaA8 are different parts of the same mesh
 # A1 is the section closest to the vent, A8 is the section farthest
 mesh_prefix = "vertical_conduit"

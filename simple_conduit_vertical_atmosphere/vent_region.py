@@ -59,12 +59,12 @@ BoundaryConditions = {
 	"right" : {
 		"BCType" : "SlipWall",
 	},
+	#"left" : {
+	#	"BCType" : "SlipWall",
+	#},
 	"bottom" : {
 		"BCType" : "MultiphasevpT2D1D",
 		"bkey": "vent",
-	},
-	"symmetry" : {
-		"BCType" : "SlipWall",
 	},
 }
 

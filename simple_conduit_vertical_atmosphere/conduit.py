@@ -1,8 +1,8 @@
 
 TimeStepping = {
 	"InitialTime"  : 0.0,
-	"FinalTime"    : 10,      # seconds
-	"NumTimeSteps" : 40000,
+	"FinalTime"    : 20,      # seconds
+	"NumTimeSteps" : 10000,
 	"TimeStepper"  : "RK3SR",
 }
 
@@ -19,8 +19,8 @@ Numerics = {
 }
 
 Output = {
-	"Prefix" : "short_plug_v16",
-	"WriteInterval" : 400,
+	"Prefix" : "short_plug_v15",
+	"WriteInterval" : 100,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
 }
@@ -137,7 +137,7 @@ ExactSolution = {
     "Function": "RiemannProblem",
 }
 
-LinkedSolvers = []
+#LinkedSolvers = []
 
 # Linked parallel solvers. If running in serial, leave as empty list.
 LinkedSolvers = [
@@ -164,4 +164,7 @@ BoundaryConditions = {
     'x2': {'BCType': 'MultiphasevpT2D1D',
         'bkey': 'vent'
     },
+    "symmetry" : {
+		"BCType" : "SlipWall",
+	},
 }

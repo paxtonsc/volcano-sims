@@ -63,7 +63,8 @@ def find_elem_ID(x, y, trifinder):
   return trifinder(x, y)
 
 
-def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100):
+def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100, p0=None, d_iter=2):
+
 
     # Find the element ID
     elem_ID = find_elem_ID(x_target, y_target, trifinder)
@@ -71,9 +72,8 @@ def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100):
     print(f"Element ID for point ({x_target}, {y_target}): {elem_ID}")
 
     p_relative_arr = []
-    p0 = None
 
-    for i in range(0, iterations, 1):
+    for i in range(0, iterations, d_iter):
         # Get the solver state at the current time step
         solver = solver2D_1(i)
 
@@ -95,7 +95,7 @@ def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100):
 
         # Compute pressure using the state vector
         p_target = np.average(solver.physics.compute_variable("Pressure", U_target))
-        if i == 0:
+        if i == 0 and p0 is None:
             p0 = p_target
 
         p_relative_arr.append(p_target - p0)
