@@ -5,7 +5,7 @@ ElementOrder2D = 1
 InitialCondition = {
 	"Function" : "HomogeneousAtmosphere",
   "h0": 5000,
-  "p_atm": 0.5e5,
+  "p_atm": 1e5,
 }
 
 # Output file prefix (no trailing underscore)
