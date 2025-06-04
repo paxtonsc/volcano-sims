@@ -2,7 +2,7 @@
 TimeStepping = {
 	"InitialTime"  : 0.0,
 	"FinalTime"    : 10,      # seconds
-	"NumTimeSteps" : 40000,
+	"NumTimeSteps" : 10000,
 	"TimeStepper"  : "RK3SR",
 }
 
@@ -19,8 +19,8 @@ Numerics = {
 }
 
 Output = {
-	"Prefix" : "short_plug_v16",
-	"WriteInterval" : 400,
+	"Prefix" : "short_plug_v18",
+	"WriteInterval" : 200,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
 }
@@ -28,7 +28,7 @@ Output = {
 Mesh = {
     "File" : None,
     "ElementShape" : "Segment",
-    "NumElemsX" : 300,
+    "NumElemsX" : 500,
     "xmin" : -1000.0,
     "xmax" : 0.0,
 }
@@ -53,7 +53,7 @@ InitialCondition = {
     "arhoA": 1e-10,    # Mass air per mixture volume
     "arhoWv": 1e-10,   # Mass water in exsolved state
     "u": 1e-10,        # Velocity
-    "T": 1000.0,     # Temperature
+    "T": 1e3,     # Temperature
     "arhoWt": 1e-10, # Mass total water (exsolved + dissolved) per mixture volume
     "arhoCPlug": 50,        # Mass crystals per mixture volume in the plug
     "arhoF": 1e-10,          # Mass fragmented magma per mixture volume

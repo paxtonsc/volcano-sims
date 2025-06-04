@@ -35,6 +35,14 @@ def point_in_volcano(x, y):
     else:
         return False
 
+def point_inside_vertical_conduit(x, y):
+    # Define the volcano shape
+    # This is a placeholder function; replace with actual volcano shape logic
+    if y < 1000 and y > -40 and x > 0 and x < 10:
+        return True
+    else:
+        return False
+
 def Q_dot_func(t, t_vec, Q_dot_vec):
     if t < t_vec[0] or t > t_vec[-1]:
         return 0
@@ -55,6 +63,13 @@ def relative_pressure(t, x, y, t_vec, Q_dot_vec):
 
     # 2/3 comes from the fact that 1/3 of the outward area is solid volcano
     return rho * Q_dot_func(t - r / sound_speed(), t_vec, Q_dot_vec) / ((2/3) * np.pi * 4 * r)
+
+def relative_pressure_vertical_conduit(t, x, y, t_vec, Q_dot_vec):
+    r = np.sqrt(x**2 + (y+40)**2)
+    rho = density()
+
+    # 2/3 comes from the fact that 1/3 of the outward area is solid volcano
+    return rho * Q_dot_func(t - r / sound_speed(), t_vec, Q_dot_vec)
 
 
 def find_elem_ID(x, y, trifinder):

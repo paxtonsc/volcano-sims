@@ -4,13 +4,13 @@ ElementOrder1D = 0
 ElementOrder2D = 1
 InitialCondition = {
 	"Function" : "HomogeneousAtmosphere",
-  "h0": -5000,
-  "p_atm": 1e5,
+  "h0": 5000,
+  "p_atm": 0.5e5,
 }
 
 # Output file prefix (no trailing underscore)
-output_file_prefix = "test_infrasound_vertical_conduit"
-write_interval_2D = 400
+output_file_prefix = "test_infrasound_vertical_conduit_v3"
+write_interval_2D = 200
 
 # Mesh file prefix (no trailing underscore)
 # There are some meshes in the scenarios/meshes/ folder
