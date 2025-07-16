@@ -9,7 +9,7 @@ InitialCondition = {
 }
 
 # Output file prefix (no trailing underscore)
-output_file_prefix = "test_infrasound_vertical_conduit_v3"
+output_file_prefix = "test_infrasound_vertical_conduit_v4"
 write_interval_2D = 200
 
 # Mesh file prefix (no trailing underscore)

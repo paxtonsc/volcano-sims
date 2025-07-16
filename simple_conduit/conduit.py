@@ -2,7 +2,7 @@
 TimeStepping = {
 	"InitialTime"  : 0.0,
 	"FinalTime"    : 10,      # seconds
-	"NumTimeSteps" : 10000,
+	"NumTimeSteps" : 20000,
 	"TimeStepper"  : "RK3SR",
 }
 
@@ -19,7 +19,7 @@ Numerics = {
 }
 
 Output = {
-	"Prefix" : "short_plug_v18",
+	"Prefix" : "short_plug_v19",
 	"WriteInterval" : 200,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
@@ -28,7 +28,7 @@ Output = {
 Mesh = {
     "File" : None,
     "ElementShape" : "Segment",
-    "NumElemsX" : 500,
+    "NumElemsX" : 1000,
     "xmin" : -1000.0,
     "xmax" : 0.0,
 }

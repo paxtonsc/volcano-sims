@@ -7,7 +7,7 @@ def get_local_solver_from_index_func(folder, file_prefix, base_path='/Users/paxt
 
     return solver_from_i
 
-def get_quantities_at_conduit_exit(solver_func, iterations=100, R=10, computer_temp=False):
+def get_quantities_at_conduit_exit(solver_func, iterations=100, R=10, compute_temp=False, conduit_index=-1):
     u_vec = []
     t_vec = []
     p_vec = []
@@ -20,16 +20,16 @@ def get_quantities_at_conduit_exit(solver_func, iterations=100, R=10, computer_t
         rho = np.sum(solver.state_coeffs[:, :, solver.physics.get_mass_slice()],axis=2,keepdims=True)
 
         temp = np.zeros_like(pressure)
-        if computer_temp:
+        if compute_temp:
             temp = solver.physics.compute_additional_variable("Temperature", solver.state_coeffs, True)
 
         # Define velocity as momentum divided by density
         u = momentum.ravel() / rho.ravel()
 
         # Take only the exit velocity
-        u_vec.append(u[-1])
+        u_vec.append(u[conduit_index])
         t_vec.append(solver.time)
-        p_vec.append(pressure[-1].ravel())
-        temp_vec.append(temp[-1].ravel())
+        p_vec.append(pressure[conduit_index].ravel())
+        temp_vec.append(temp[conduit_index].ravel())
     
     return np.array(t_vec), np.array(p_vec), np.array(u_vec), np.array(temp_vec)

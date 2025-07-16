@@ -43,12 +43,12 @@ def point_inside_vertical_conduit(x, y):
     else:
         return False
 
-def Q_dot_func(t, t_vec, Q_dot_vec):
+def interpolate(t, t_vec, func_vec):
     if t < t_vec[0] or t > t_vec[-1]:
         return 0
     
     # Create interpolator for each grid point
-    interpolator = interp1d(t_vec, Q_dot_vec, kind='linear', fill_value="extrapolate")
+    interpolator = interp1d(t_vec, func_vec, kind='linear', fill_value="extrapolate")
     
     # Evaluate at time t
     interpolated_Q = interpolator(t)
@@ -62,14 +62,15 @@ def relative_pressure(t, x, y, t_vec, Q_dot_vec):
     rho = density()
 
     # 2/3 comes from the fact that 1/3 of the outward area is solid volcano
-    return rho * Q_dot_func(t - r / sound_speed(), t_vec, Q_dot_vec) / ((2/3) * np.pi * 4 * r)
+    return rho * interpolate(t - r / sound_speed(), t_vec, Q_dot_vec) / ((2/3) * np.pi * 4 * r)
 
-def relative_pressure_vertical_conduit(t, x, y, t_vec, Q_dot_vec):
+def relative_pressure_vertical_conduit(t, x, y, t_vec, Q_vec, conduit_radius=10):
     r = np.sqrt(x**2 + (y+40)**2)
     rho = density()
+    c = sound_speed()
+    A = np.pi * conduit_radius**2
 
-    # 2/3 comes from the fact that 1/3 of the outward area is solid volcano
-    return rho * Q_dot_func(t - r / sound_speed(), t_vec, Q_dot_vec)
+    return c * rho / A * interpolate(t - r / c, t_vec, Q_vec)
 
 
 def find_elem_ID(x, y, trifinder):

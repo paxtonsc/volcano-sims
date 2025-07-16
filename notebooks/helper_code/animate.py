@@ -185,7 +185,6 @@ def animate_conduit_pressure(
         # Compute variables
         p = solver.physics.compute_additional_variable("Pressure", solver.state_coeffs, flag_non_physical)
         sound_speed = solver.physics.compute_additional_variable("SoundSpeed", solver.state_coeffs, flag_non_physical)
-        solver.physics.compute_additional_variable("Temperature", solver.state_coeffs, flag_non_physical)
         viscosity = solver.physics.source_terms[viscosity_index].compute_viscosity(solver.state_coeffs, solver.physics)
         tau_slip = solver.physics.source_terms[wall_friction_index].compute_tau(solver.state_coeffs, x, solver.physics)
         plug_boundary = solver.physics.source_terms[wall_friction_index].compute_plug_boundary(solver.state_coeffs, x, solver.physics)
