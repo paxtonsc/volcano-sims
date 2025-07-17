@@ -7,8 +7,8 @@ import run_globals
 BASE_PATH='/Users/paxton/git/quail_volcano'
 
 Numerics = {
-	"SolutionOrder" : run_globals.ElementOrder2D,
-	"SolutionBasis" : "LagrangeTri",
+	"SolutionOrder" : 0,
+	"SolutionBasis" : "LagrangeSeg",
 	"Solver" : "DG",
 	"ApplyLimiters" : "PositivityPreservingMultiphasevpT",
 	"ArtificialViscosity" : True,
@@ -17,12 +17,17 @@ Numerics = {
 }
 
 Mesh = {
-	"File" : f"{BASE_PATH}/scenarios/meshes/{run_globals.mesh_prefix}.msh",
+    "File" : None,
+    "ElementShape" : "Segment",
+    "NumElemsX" : 10000,
+    "xmin" : 0,
+    "xmax" : 1000,
 }
+
 
 Output = {
 	"Prefix" : f"{run_globals.output_file_prefix}_atm1",
-	"WriteInterval" : run_globals.write_interval_2D,
+	"WriteInterval" : run_globals.write_interval_1D,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
 }
@@ -39,10 +44,6 @@ SourceTerms = {
 	#	"gravity": 9.8,
 	#	'source_treatment': 'Explicit',
 	#},
-	"source2": {
-		"Function" : "CylindricalGeometricSource",
-		'source_treatment': 'Explicit',
-	}
 }
 
 # Set initial condition specified in run_globals.py
@@ -53,36 +54,15 @@ ExactSolution = InitialCondition.copy()
 
 # Set boundary conditions (and provisionally add impedance BC at outer boundary)
 BoundaryConditions = {
-	"top" : {
-		"BCType" : "LinearizedImpedance2D",
+	"x1" : {
+		"BCType" : "MultiphasevpT1D1D",
+		"bkey": "interface",
 	},
-	"right" : {
-		"BCType" : "SlipWall",
-	},
-	"bottom" : {
-		"BCType" : "MultiphasevpT2D1D",
-		"bkey": "vent_test",
-	},
-	"symmetry" : {
-		"BCType" : "SlipWall",
-	},
+	'x2': {
+        'BCType': 'PressureOutlet1D',   # Inlet boundary condition
+        'p': 1e5,                      # Pressure
+    },
 }
 
-# Setting to extend atmosphere here
-# When True, attaches simulation r1r2.py to make a bigger 2D domain
-# When False, leaves the impedance boundary condition at r1 as is
-extend_atm = False
 
-if extend_atm:
-	BoundaryConditions["r1"] = {
-		"BCType" : "MultiphasevpT2D2D",
-		"bkey": "r1"
-	}
-	LinkedSolvers = [
-		{
-			"DeckName": "r1r2.py",
-			"BoundaryName": "r1",
-		},
-	]
-else:
-	LinkedSolvers = []
+LinkedSolvers = []

@@ -11,25 +11,29 @@ def get_quantities_at_conduit_exit(solver_func, iterations=100, R=10, compute_te
     u_vec = []
     t_vec = []
     p_vec = []
+    slip_vec = []
     temp_vec = []
 
     for i in range(0, iterations, 1):
         solver = solver_func(i)
         momentum = solver.state_coeffs[:,:,solver.physics.get_momentum_slice()]
+        rhoSlip = solver.state_coeffs[:, :, solver.physics.get_state_index("rhoSlip")]
         pressure = solver.physics.compute_additional_variable("Pressure", solver.state_coeffs, True)
         rho = np.sum(solver.state_coeffs[:, :, solver.physics.get_mass_slice()],axis=2,keepdims=True)
-
+        
         temp = np.zeros_like(pressure)
         if compute_temp:
             temp = solver.physics.compute_additional_variable("Temperature", solver.state_coeffs, True)
 
         # Define velocity as momentum divided by density
         u = momentum.ravel() / rho.ravel()
+        slip = rhoSlip.ravel() / rho.ravel()
 
         # Take only the exit velocity
         u_vec.append(u[conduit_index])
         t_vec.append(solver.time)
         p_vec.append(pressure[conduit_index].ravel())
+        slip_vec.append(slip[conduit_index].ravel())
         temp_vec.append(temp[conduit_index].ravel())
-    
-    return np.array(t_vec), np.array(p_vec), np.array(u_vec), np.array(temp_vec)
+
+    return np.array(t_vec), np.array(p_vec), np.array(slip_vec), np.array(u_vec), np.array(temp_vec)

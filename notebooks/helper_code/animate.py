@@ -23,7 +23,9 @@ def animate_conduit_pressure(
     y_max=0,
     max_speed_of_sound=1000,
     max_pressure=12,
+    min_pressure=0,
     max_velocity=1,
+    min_velocity=0,
     slip_final=3.5,
     max_slip=20,
     max_tau=0.5,
@@ -33,6 +35,7 @@ def animate_conduit_pressure(
     max_fragmentation=600,
     max_crystal=600,
     show_p0_line=False,
+    is_atm=False
 ):
     """
     Animates various state variables in the conduit over time.
@@ -87,8 +90,8 @@ def animate_conduit_pressure(
     fig = plt.figure(figsize=(12, 8))
 
     # Define subplots with consistent axis limits
-    ax1 = fig.add_subplot(251, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_pressure))
-    ax2 = fig.add_subplot(252, autoscale_on=False, ylim=(y_max, y_min), xlim=(-3.0, max_velocity))
+    ax1 = fig.add_subplot(251, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_pressure, max_pressure))
+    ax2 = fig.add_subplot(252, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_velocity, max_velocity))
     ax3 = fig.add_subplot(253, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_speed_of_sound))
     ax4 = fig.add_subplot(254, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_viscosity))
     ax5 = fig.add_subplot(255, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_water))
@@ -185,10 +188,12 @@ def animate_conduit_pressure(
         # Compute variables
         p = solver.physics.compute_additional_variable("Pressure", solver.state_coeffs, flag_non_physical)
         sound_speed = solver.physics.compute_additional_variable("SoundSpeed", solver.state_coeffs, flag_non_physical)
-        viscosity = solver.physics.source_terms[viscosity_index].compute_viscosity(solver.state_coeffs, solver.physics)
-        tau_slip = solver.physics.source_terms[wall_friction_index].compute_tau(solver.state_coeffs, x, solver.physics)
-        plug_boundary = solver.physics.source_terms[wall_friction_index].compute_plug_boundary(solver.state_coeffs, x, solver.physics)
-        tau_viscous = solver.physics.source_terms[viscosity_index].compute_tau(solver.state_coeffs, x, solver.physics)
+        
+        if not is_atm: 
+            viscosity = solver.physics.source_terms[viscosity_index].compute_viscosity(solver.state_coeffs, solver.physics)
+            tau_slip = solver.physics.source_terms[wall_friction_index].compute_tau(solver.state_coeffs, x, solver.physics)
+            plug_boundary = solver.physics.source_terms[wall_friction_index].compute_plug_boundary(solver.state_coeffs, x, solver.physics)
+            tau_viscous = solver.physics.source_terms[viscosity_index].compute_tau(solver.state_coeffs, x, solver.physics)
 
         # Extract state variables
         arhoA = solver.state_coeffs[:, :, solver.physics.get_state_index("pDensityA")]
@@ -210,22 +215,25 @@ def animate_conduit_pressure(
         pressure_line.set_data(p.ravel() / 1e6, x.ravel())
         velocity_line.set_data(u.ravel(), x.ravel())
         sound_speed_line.set_data(sound_speed.ravel(), x.ravel())
-        viscosity_line.set_data(viscosity.ravel() / 1e6, x.ravel())
         total_water_line.set_data(arhoWt.ravel(), x.ravel())
         exsolved_water_line.set_data(arhoWv.ravel(), x.ravel())
         new_state_line.set_data(slip.ravel(), x.ravel())
         rho_line.set_data(rho.ravel(), x.ravel())
         crystal_line.set_data(arhoC.ravel(), x.ravel())
         arhoF_line.set_data(arhoF.ravel(), x.ravel())
-        tau_line.set_data(tau_slip.ravel() / 1e6, x.ravel())
-        tau_viscous_line.set_data(tau_viscous.ravel() / 1e6, x.ravel())
-        plug_boundary_line.set_ydata([plug_boundary])
+
+        if not is_atm:
+            viscosity_line.set_data(viscosity.ravel() / 1e6, x.ravel())
+            tau_line.set_data(tau_slip.ravel() / 1e6, x.ravel())
+            tau_viscous_line.set_data(tau_viscous.ravel() / 1e6, x.ravel())
+            plug_boundary_line.set_ydata([plug_boundary])
+            boundary_text.set_text(boundary_template % plug_boundary)
 
         # Update text annotations
         time_text.set_text(time_template % (solver.time))
         pl_text.set_text(pl_template % (p.ravel()[0] / 1e6))
         velocity_text.set_text(velocity_template % u.ravel()[0])
-        boundary_text.set_text(boundary_template % plug_boundary)
+        
 
         return (
             pressure_line, velocity_line, sound_speed_line, viscosity_line,

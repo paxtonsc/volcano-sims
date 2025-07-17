@@ -1,7 +1,7 @@
 
 TimeStepping = {
 	"InitialTime"  : 0.0,
-	"FinalTime"    : 10,      # seconds
+	"FinalTime"    : 5,      # seconds
 	"NumTimeSteps" : 20000,
 	"TimeStepper"  : "RK3SR",
 }
@@ -19,7 +19,7 @@ Numerics = {
 }
 
 Output = {
-	"Prefix" : "short_plug_v19",
+	"Prefix" : "short_plug_v2",
 	"WriteInterval" : 200,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
@@ -28,7 +28,7 @@ Output = {
 Mesh = {
     "File" : None,
     "ElementShape" : "Segment",
-    "NumElemsX" : 1000,
+    "NumElemsX" : 10000,
     "xmin" : -1000.0,
     "xmax" : 0.0,
 }
@@ -66,24 +66,6 @@ InitialCondition = {
 }
 
 SourceTerms = {
-    #'source2': {
-    #    'Function': 'GravitySource',
-    #    "gravity": 9.8,
-    #    "source_treatment": "Explicit",
-    #},
-    #'source3': {
-        #'Function': 'ExsolutionSource',   # Exsolution source
-        #'source_treatment': 'Explicit',
-        #'tau_d': 10.0,                    # Exsolution timescale (s)
-    #},
-    #'source4': {'Function': 'FragmentationTimescaleSourceSmoothed',
-    #    'crit_volfrac': 0.7,                       # Critical volume fraction
-    #    'fragsmooth_scale': 0.05,                  # Fragmentation smoothing scale (for two-sided smoothing)
-    #    'source_treatment': 'Explicit',
-    #    'tau_f': 1.0,                              # Fragmentation timescale (s)
-    #},
-    ## Add a new source term that does nothing yet; see src/physics/multiphasevpT/functions.py
-    ## It is easy to modify this source term to affect the value of the new state variable as a function of x and t. 
     "slip_source": {
         "Function" : "SlipSource",
         "source_treatment" : "Explicit",
@@ -143,13 +125,17 @@ LinkedSolvers = []
 LinkedSolvers = [
   {
     "DeckName": "vent_region.py",
-    "BoundaryName": "vent_test", # set equal to the "bkey" param of a MultiphasevpT2D1D BoundaryCondition
+    "BoundaryName": "interface", # set equal to the "bkey" param of a MultiphasevpT1D1D BoundaryCondition
   },
 ]
 
 BoundaryConditions = {
     'x1': {
         'BCType': 'SlipWall',   # Inlet boundary condition
+    },
+    'x2': {
+        'BCType': 'MultiphasevpT1D1D',
+        'bkey': 'interface',
     },
     #'x1': {
     #    'BCType': 'VelocityInlet1D',   # Inlet boundary condition
@@ -161,7 +147,4 @@ BoundaryConditions = {
     #    "BCType" : "PressureOutlet1D",
     #    "p": 1e5,
     #},
-    'x2': {'BCType': 'MultiphasevpT2D1D',
-        'bkey': 'vent_test'
-    },
 }
