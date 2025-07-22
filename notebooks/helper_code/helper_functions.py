@@ -37,3 +37,22 @@ def get_quantities_at_conduit_exit(solver_func, iterations=100, R=10, compute_te
         temp_vec.append(temp[conduit_index].ravel())
 
     return np.array(t_vec), np.array(p_vec), np.array(slip_vec), np.array(u_vec), np.array(temp_vec)
+
+
+def get_quantities_at_all_space(solver_func, iter, R=10):
+    solver = solver_func(iter)
+    
+    iarhoA, iarhoWv, iarhoM, imom, ie, iarhoWt, iarhoC, iarhoFm, irhoslip = solver.physics.get_state_indices()
+
+    rhoA = solver.state_coeffs[:, :, iarhoA]
+    rhoWv = solver.state_coeffs[:, :, iarhoWv]
+    rhoM = solver.state_coeffs[:, :, iarhoM]
+    momentum = solver.state_coeffs[:, :, imom]
+    energy = solver.state_coeffs[:, :, ie]
+    rhoWt = solver.state_coeffs[:, :, iarhoWt]
+    rhoC = solver.state_coeffs[:, :, iarhoC]
+    rhoF = solver.state_coeffs[:, :, iarhoFm]
+    rhoSlip = solver.state_coeffs[:, :, irhoslip]
+
+    return rhoA, rhoWv, rhoM, momentum, energy, rhoWt, rhoC, rhoF, rhoSlip
+ 

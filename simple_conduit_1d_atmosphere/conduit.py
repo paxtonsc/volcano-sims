@@ -6,6 +6,9 @@ TimeStepping = {
 	"TimeStepper"  : "RK3SR",
 }
 
+Restart = {'File': '/Users/paxton/git/volcano_sims/simple_conduit_no_atmosphere/short_plug_1m_25.pkl',
+ 'StartFromFileTime': True}
+
 Numerics = {
     "SolutionOrder" : 0,
     "SolutionBasis" : "LagrangeSeg",
@@ -19,7 +22,7 @@ Numerics = {
 }
 
 Output = {
-	"Prefix" : "short_plug_1_5m_1s",
+	"Prefix" : "short_plug_1m_2_5s",
 	"WriteInterval" : 100,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,

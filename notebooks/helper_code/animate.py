@@ -12,6 +12,132 @@ SOURCE_DIR = f"{BASE_PATH}/quail_volcano/src"
 # Set working directory to source
 os.chdir(SOURCE_DIR)
 
+
+def animate_melt_atmosphere_combination(
+    melt_solver_from_i,
+    atmosphere_solver_from_i,
+    iterations=100,
+    d_iterations=1,
+    y_min=-1000,
+    y_max=1000,
+    max_pressure=12,
+    min_pressure=0,
+    max_velocity=1,
+    min_velocity=0,
+    max_density=2.6e3,
+    min_density=0,
+    max_slip=20,
+    min_slip=0,
+):
+    fig = plt.figure(figsize=(12, 8))
+    ax1 = fig.add_subplot(141, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_slip, max_slip))
+    ax2 = fig.add_subplot(143, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_velocity, max_velocity))
+    ax3 = fig.add_subplot(142, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_pressure, max_pressure))
+    ax4 = fig.add_subplot(144, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_density, max_density))
+
+    for ax in [ax1, ax2, ax3, ax4]:
+        ax.invert_yaxis()
+        ax.grid(True)
+    
+    slip_line, = ax1.plot([], [], color="purple", label="Slip")
+    velocity_line, = ax2.plot([], [], color="red", label="Velocity")
+    pressure_line, = ax3.plot([], [], color="blue", label="Pressure")
+    density_line, = ax4.plot([], [], color="green", label="Density")
+
+    ax1.set_xlabel("Slip [m]")
+    ax2.set_xlabel("Velocity [m/s]")
+    ax3.set_xlabel("Pressure [MPa]")
+    ax4.set_xlabel("Density [kg/m³]")
+    ax1.set_ylabel("Height [m]")
+    ax2.set_ylabel("Height [m]")
+    ax3.set_ylabel("Height [m]")
+    ax4.set_ylabel("Height [m]")
+    ax1.legend(loc="lower right")
+    ax2.legend(loc="lower right")
+    ax3.legend(loc="lower right")
+    ax4.legend(loc="lower right")
+    
+    time_text = ax1.text(0.4, 0.95, "", transform=ax1.transAxes)
+    
+    time_template = 'time = %.2f [s]'
+
+    def init():
+        for line in [slip_line, velocity_line, pressure_line, density_line]:
+            line.set_data([], [])
+        time_text.set_text("")
+        return slip_line, velocity_line, pressure_line, density_line, time_text
+    
+    def animate(i):
+        flag_non_physical = True
+
+        melt_solver = melt_solver_from_i(i)
+        atmosphere_solver = atmosphere_solver_from_i(i)
+
+        # Get nodal points
+        nodal_pts = melt_solver.basis.get_nodes(melt_solver.order)
+        nodal_pts_atmosphere = atmosphere_solver.basis.get_nodes(atmosphere_solver.order)
+
+        x_melt = np.empty((melt_solver.mesh.num_elems,) + nodal_pts.shape)
+        for elem_ID in range(melt_solver.mesh.num_elems):
+            x_melt[elem_ID] = mesh_tools.ref_to_phys(melt_solver.mesh, elem_ID, nodal_pts)
+
+        x_atmosphere = np.empty((atmosphere_solver.mesh.num_elems,) + nodal_pts_atmosphere.shape)
+        for elem_ID in range(atmosphere_solver.mesh.num_elems):
+            x_atmosphere[elem_ID] = mesh_tools.ref_to_phys(atmosphere_solver.mesh, elem_ID, nodal_pts_atmosphere)
+
+        # Extract state variables
+        rho_slip_melt = melt_solver.state_coeffs[:, :, melt_solver.physics.get_state_index("rhoSlip")].ravel()
+        melt_momentum = melt_solver.state_coeffs[:, :, melt_solver.physics.get_momentum_slice()].ravel()
+        pressure_melt = melt_solver.physics.compute_additional_variable("Pressure", melt_solver.state_coeffs, flag_non_physical).ravel() / 1e6
+        rho_melt = np.sum(melt_solver.state_coeffs[:, :, melt_solver.physics.get_mass_slice()], axis=2, keepdims=True).ravel()
+
+        slip_melt = rho_slip_melt / rho_melt
+        velocity_melt = melt_momentum / rho_melt
+
+        rho_slip_atmosphere = atmosphere_solver.state_coeffs[:, :, atmosphere_solver.physics.get_state_index("rhoSlip")].ravel()
+        atmosphere_momentum = atmosphere_solver.state_coeffs[:, :, atmosphere_solver.physics.get_momentum_slice()].ravel()
+        pressure_atmosphere = atmosphere_solver.physics.compute_additional_variable("Pressure", atmosphere_solver.state_coeffs, flag_non_physical).ravel() / 1e6
+        rho_atmosphere = np.sum(atmosphere_solver.state_coeffs[:, :, atmosphere_solver.physics.get_mass_slice()], axis=2, keepdims=True).ravel()
+
+        slip_atmosphere = rho_slip_atmosphere / rho_atmosphere
+        velocity_atmosphere = atmosphere_momentum / rho_atmosphere
+
+        x = np.concatenate((x_melt, x_atmosphere), axis=0).ravel()
+        slip = np.concatenate((slip_melt, slip_atmosphere), axis=0).ravel()
+        velocity = np.concatenate((velocity_melt, velocity_atmosphere), axis=0).ravel()
+        pressure = np.concatenate((pressure_melt, pressure_atmosphere), axis=0).ravel()
+        density = np.concatenate((rho_melt, rho_atmosphere), axis=0).ravel()
+
+        # Update plot data
+        slip_line.set_data(slip, x)
+        velocity_line.set_data(velocity, x)
+        pressure_line.set_data(pressure, x)
+        density_line.set_data(density, x)
+
+        # Update text annotation
+        time_text.set_text(time_template % (melt_solver.time))
+
+        return slip_line, velocity_line, pressure_line, density_line, time_text
+    
+    # Adjust layout to minimize spacing
+    plt.tight_layout()
+    plt.subplots_adjust(bottom=0.2)
+    plt.grid(True)
+
+    # Close the figure to prevent display during animation creation
+    plt.close()
+
+    # Create and return the animation
+    return animation.FuncAnimation(
+        fig,
+        animate,
+        frames=np.linspace(0, iterations, int(iterations / d_iterations), dtype=int),
+        init_func=init,
+        interval=100,
+        blit=False
+    )
+
+
 def animate_conduit_pressure(
     solver_from_i,
     iterations=100,

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 
-def get_lumped_solution(K=1e9, L_melt=950, tau_p=1e6, tau_r=0, R=10, L_plug=50, g=9.81, rho=2.6e3, mu=5e4, D_c=3, C=600, p0=11.5e6, p_atm=1e5):
+def get_lumped_solution(K=1e9, L_melt=950, tau_p=1e6, tau_r=0, R=10, L_plug=50, g=9.81, rho=2.6e3, mu=5e4, D_c=3, C=600, p0=11.5e6, p_atm=1e5, t_end=20):
     """
     Solves the lumped model differential equations and returns the position and velocity.
     """
@@ -45,7 +45,7 @@ def get_lumped_solution(K=1e9, L_melt=950, tau_p=1e6, tau_r=0, R=10, L_plug=50, 
     initial_state = [s1_0, s2_0]
 
     # Time points
-    t_lumped = np.linspace(0, 20, 500)  # Time from 0 to 20 with 500 points
+    t_lumped = np.linspace(0, t_end, 500)  # Time from 0 to t_end with 500 points
 
     # Solve the differential equations
     solution = odeint(system, initial_state, t_lumped)
