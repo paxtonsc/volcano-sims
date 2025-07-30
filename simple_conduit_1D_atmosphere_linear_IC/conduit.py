@@ -2,7 +2,7 @@
 TimeStepping = {
 	"InitialTime"  : 0.0,
 	"FinalTime"    : 5,      # seconds
-	"NumTimeSteps" : 100000,
+	"NumTimeSteps" : 10000,
 	"TimeStepper"  : "RK3SR",
 }
 
@@ -19,8 +19,8 @@ Numerics = {
 }
 
 Output = {
-	"Prefix" : "order1_atm_01m",
-	"WriteInterval" : 1000,
+	"Prefix" : "order1_atm_1m_v2",
+	"WriteInterval" : 100,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
 }
@@ -28,7 +28,7 @@ Output = {
 Mesh = {
     "File" : None,
     "ElementShape" : "Segment",
-    "NumElemsX" : 10000,
+    "NumElemsX" : 1000,
     "xmin" : -1000.0,
     "xmax" : 0.0,
 }

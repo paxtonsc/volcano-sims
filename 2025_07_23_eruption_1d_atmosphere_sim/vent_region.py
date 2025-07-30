@@ -24,8 +24,9 @@ Mesh = {
     "xmax" : 1000,
 }
 
+
 Output = {
-	"Prefix" : f"{run_globals.output_file_prefix}",
+	"Prefix" : f"{run_globals.output_file_prefix}_atm1",
 	"WriteInterval" : run_globals.write_interval_1D,
 	"WriteInitialSolution" : True,
 	"AutoPostProcess": False,
@@ -55,7 +56,7 @@ ExactSolution = InitialCondition.copy()
 BoundaryConditions = {
 	"x1" : {
 		"BCType" : "MultiphasevpT1D1D",
-		"bkey": "interface",
+		"bkey": "vent",
 	},
 	'x2': {
         'BCType': 'PressureOutlet1D',   # Inlet boundary condition

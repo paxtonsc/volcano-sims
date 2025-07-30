@@ -9,5 +9,6 @@ InitialCondition = {
 }
 
 # Output file prefix (no trailing underscore)
-output_file_prefix = "vertical_atmosphere_02"
-write_interval_1D = 100
+output_file_prefix = "vertical_atmosphere_01"
+write_interval_1D = 200
+

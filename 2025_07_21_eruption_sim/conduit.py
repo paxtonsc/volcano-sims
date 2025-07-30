@@ -1,7 +1,8 @@
 ''' Sample input file for conduit in Vulcanian eruption. See below for instructions. '''
 
-
+import run_globals
 import numpy as np
+
 # SolutionOrder = 2 means that the solution is piecewise quadratic.
 Numerics = {'AVParameter': 30,
  'ApplyLimiters': 'PositivityPreservingMultiphasevpT',
@@ -18,7 +19,7 @@ Numerics = {'AVParameter': 30,
 # elements.
 Mesh = {'ElementShape': 'Segment',
  'File': None,
- 'NumElemsX': 3000,
+ 'NumElemsX': 1000,
  'xmax': 0,   # Top of the conduit is placed at -150 m for 2D coupling, but you can choose whatever if not coupling to 2D.
  'xmin': -1000.0
 }
@@ -58,13 +59,13 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
              'gravity': 9.8,
              'source_treatment': 'Explicit'},
  'source2': {'Function': 'FrictionVolFracVariableMu',   # Friction source term for given conduit radius
-           'use_default_viscosity': False,
-           # 'default_viscosity': 1e6,
+             'use_default_viscosity': True,
+             'default_viscosity': 1e6,
              'conduit_radius': 5.,
              'viscosity_factor': 1/5,#1/20,
              'source_treatment': 'Explicit',
-           'model_plug': True,
-           'plug_boundary_0': -50,
+             'model_plug': True,
+             'plug_boundary_0': -50,
              },
  'source3': {'Function': 'ExsolutionSource',            # Exsolution source
              'source_treatment': 'Explicit',
@@ -86,23 +87,23 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
     
     },
 "source5": {
-      "Function": "FrictionVolSlip",
-      "source_treatment": "Explicit", 
-      "conduit_radius": 5, 
-      "tau_peak": t_plug,
-      "tau_r": 0  ,
-      "D_c": 0.01,
-      "plug_boundary_0": -50,
-      "use_constant_tau": True,
+  "Function": "FrictionVolSlip",
+  "source_treatment": "Explicit", 
+  "conduit_radius": 5, 
+  "tau_peak": t_plug,
+  "tau_r": 0  ,
+  "D_c": 0.01,
+  "plug_boundary_0": -50,
+  "use_constant_tau": True,
   "exponential_tau": False,
-         },
+},
 }
 
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_rad_5_v33_conduit',              # Output filename
+ 'Prefix': 'tungurahua_atm_1m',              # Output filename
  'WriteInitialSolution': True,
- 'WriteInterval': 200,                                   # Output frequency (this many timesteps pass before file is written)
+ 'WriteInterval': run_globals.write_interval,                                   # Output frequency (this many timesteps pass before file is written)
 }
 
 
@@ -169,27 +170,32 @@ BoundaryConditions = {
         # 'approx_mass_fracs': False,                   # Compute exactly the mass fraction of inlet fluid
         # 'solubility_k': 5e-06,                        # Henry's law coefficient
         # 'solubility_n': 0.5,                          # Henry's law exponent
-},  
-  # For running serial, using p boundary condition:
- 'x2': {'BCType': 'PressureOutlet1D',                   # Pressure outlet boundary condition (automatically chokes if needed)
-        'p': 100000.0,                  # Boundary pressure (if flow not choked) -- with scale height factor
-        },
+  },
   # For running in parallel, the following boundary condition type is needed:
-#    'x2': {'BCType': 'MultiphasevpT1D1D',
-        #   'bkey': 'comm2D1D'}
+  'x2': {
+      'BCType': 'MultiphasevpT2D1D', 
+      'bkey': 'vent'
+  }
+  # For running serial, using p boundary condition:
+  #'x2': {'BCType': 'PressureOutlet1D',                   # Pressure outlet boundary condition (automatically chokes if needed)
+  #       'p': 1e5,                  # Boundary pressure (if flow not choked) -- with scale height factor
+  #       },
 }
 
 
 # Linked parallel solvers. If running in serial, leave as empty list.
-LinkedSolvers = []
+# LinkedSolvers = []
 # A parallel solver would have multiple input files like this one, and they would
 # be linked as follows:
-# LinkedSolvers = [{'BoundaryName': 'comm2D1D',
-#                   'DeckName': 'vent_region.py'}]
-
+LinkedSolvers = [
+    {
+        'BoundaryName': 'vent',
+        'DeckName': 'vent_region.py'
+    },
+]
 
 TimeStepping = {'FinalTime': 10, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 140000,# Number of timesteps to run for
- 'TimeStepper': 'Strang', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
+ 'NumTimeSteps': 20000,# Number of timesteps to run for
+ 'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }

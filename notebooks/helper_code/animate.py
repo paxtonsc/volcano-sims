@@ -28,45 +28,44 @@ def animate_melt_atmosphere_combination(
     min_density=0,
     max_slip=20,
     min_slip=0,
+    min_speed_of_sound=0,
+    max_speed_of_sound=1000,
 ):
-    fig = plt.figure(figsize=(12, 8))
-    ax1 = fig.add_subplot(141, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_slip, max_slip))
-    ax2 = fig.add_subplot(143, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_velocity, max_velocity))
-    ax3 = fig.add_subplot(142, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_pressure, max_pressure))
-    ax4 = fig.add_subplot(144, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_density, max_density))
-
-    for ax in [ax1, ax2, ax3, ax4]:
-        ax.invert_yaxis()
-        ax.grid(True)
+    fig = plt.figure(figsize=(14, 6))
+    ax1 = fig.add_subplot(151, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_slip, max_slip))
+    ax2 = fig.add_subplot(153, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_velocity, max_velocity))
+    ax3 = fig.add_subplot(152, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_pressure, max_pressure))
+    ax4 = fig.add_subplot(154, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_density, max_density))
+    ax5 = fig.add_subplot(155, autoscale_on=False, ylim=(y_max, y_min), xlim=(min_speed_of_sound, max_speed_of_sound))
     
     slip_line, = ax1.plot([], [], color="purple", label="Slip")
     velocity_line, = ax2.plot([], [], color="red", label="Velocity")
     pressure_line, = ax3.plot([], [], color="blue", label="Pressure")
     density_line, = ax4.plot([], [], color="green", label="Density")
+    sound_speed_line, = ax5.plot([], [], color="orange", label="Speed of Sound")
 
     ax1.set_xlabel("Slip [m]")
     ax2.set_xlabel("Velocity [m/s]")
     ax3.set_xlabel("Pressure [MPa]")
     ax4.set_xlabel("Density [kg/m³]")
-    ax1.set_ylabel("Height [m]")
-    ax2.set_ylabel("Height [m]")
-    ax3.set_ylabel("Height [m]")
-    ax4.set_ylabel("Height [m]")
-    ax1.legend(loc="lower right")
-    ax2.legend(loc="lower right")
-    ax3.legend(loc="lower right")
-    ax4.legend(loc="lower right")
-    
+    ax5.set_xlabel("Speed of Sound [m/s]")
+
+    for ax in [ax1, ax2, ax3, ax4, ax5]:
+        ax.invert_yaxis()
+        ax.grid(True)
+        ax.legend(loc="lower right")
+        ax.set_ylabel("Height [m]")
+
     time_text = ax1.text(0.4, 0.95, "", transform=ax1.transAxes)
     
     time_template = 'time = %.2f [s]'
 
     def init():
-        for line in [slip_line, velocity_line, pressure_line, density_line]:
+        for line in [slip_line, velocity_line, pressure_line, density_line, sound_speed_line]:
             line.set_data([], [])
         time_text.set_text("")
-        return slip_line, velocity_line, pressure_line, density_line, time_text
-    
+        return slip_line, velocity_line, pressure_line, density_line, sound_speed_line, time_text
+
     def animate(i):
         flag_non_physical = True
 
@@ -89,6 +88,7 @@ def animate_melt_atmosphere_combination(
         rho_slip_melt = melt_solver.state_coeffs[:, :, melt_solver.physics.get_state_index("rhoSlip")].ravel()
         melt_momentum = melt_solver.state_coeffs[:, :, melt_solver.physics.get_momentum_slice()].ravel()
         pressure_melt = melt_solver.physics.compute_additional_variable("Pressure", melt_solver.state_coeffs, flag_non_physical).ravel() / 1e6
+        sound_speed_melt = melt_solver.physics.compute_additional_variable("SoundSpeed", melt_solver.state_coeffs, flag_non_physical)
         rho_melt = np.sum(melt_solver.state_coeffs[:, :, melt_solver.physics.get_mass_slice()], axis=2, keepdims=True).ravel()
 
         slip_melt = rho_slip_melt / rho_melt
@@ -97,6 +97,7 @@ def animate_melt_atmosphere_combination(
         rho_slip_atmosphere = atmosphere_solver.state_coeffs[:, :, atmosphere_solver.physics.get_state_index("rhoSlip")].ravel()
         atmosphere_momentum = atmosphere_solver.state_coeffs[:, :, atmosphere_solver.physics.get_momentum_slice()].ravel()
         pressure_atmosphere = atmosphere_solver.physics.compute_additional_variable("Pressure", atmosphere_solver.state_coeffs, flag_non_physical).ravel() / 1e6
+        sound_speed_atmosphere = atmosphere_solver.physics.compute_additional_variable("SoundSpeed", atmosphere_solver.state_coeffs, flag_non_physical)
         rho_atmosphere = np.sum(atmosphere_solver.state_coeffs[:, :, atmosphere_solver.physics.get_mass_slice()], axis=2, keepdims=True).ravel()
 
         slip_atmosphere = rho_slip_atmosphere / rho_atmosphere
@@ -107,17 +108,19 @@ def animate_melt_atmosphere_combination(
         velocity = np.concatenate((velocity_melt, velocity_atmosphere), axis=0).ravel()
         pressure = np.concatenate((pressure_melt, pressure_atmosphere), axis=0).ravel()
         density = np.concatenate((rho_melt, rho_atmosphere), axis=0).ravel()
+        sound_speed = np.concatenate((sound_speed_melt, sound_speed_atmosphere), axis=0).ravel()
 
         # Update plot data
         slip_line.set_data(slip, x)
         velocity_line.set_data(velocity, x)
         pressure_line.set_data(pressure, x)
         density_line.set_data(density, x)
+        sound_speed_line.set_data(sound_speed, x)
 
         # Update text annotation
         time_text.set_text(time_template % (melt_solver.time))
 
-        return slip_line, velocity_line, pressure_line, density_line, time_text
+        return slip_line, velocity_line, pressure_line, density_line, sound_speed_line, time_text
     
     # Adjust layout to minimize spacing
     plt.tight_layout()
