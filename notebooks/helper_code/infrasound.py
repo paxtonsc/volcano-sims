@@ -79,7 +79,7 @@ def find_elem_ID(x, y, trifinder):
   return trifinder(x, y)
 
 
-def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100, p0=None, d_iter=2):
+def get_p_series(x_target, y_target, solver2D_1, trifinder, iterations=100, p0=None, d_iter=1):
 
 
     # Find the element ID

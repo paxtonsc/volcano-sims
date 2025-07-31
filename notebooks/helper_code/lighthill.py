@@ -72,7 +72,7 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
 
     print(f"Number of contributions: {len(rs)}") 
     print(f"r average: {np.average(rs)}")
-    print(f"Max source value: {max(np.asarray(src_values))}")
+    #print(f"Max source value: {max(np.asarray(src_values))}")
     return p_t
 
 
