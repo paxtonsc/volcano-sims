@@ -48,8 +48,8 @@ def atmosphere_2d_animate(iterations, d_iter, folder, file_name):
         mdtools.plot_mean(x1, t1 - t1_0, temp_clims, cmap=plt.get_cmap('inferno'), ax=ax2)
 
         # Set titles with time rounded to 1 decimal place
-        ax1.set_title(f"$\Delta$ Pressure Field at t= {round(solver2D_atm1(frame).time, 1)}")
-        ax2.set_title(f"$\Delta$ Temperature Field at t= {round(solver2D_atm1(frame).time, 1)}")
+        ax1.set_title(rf"$\Delta$ Pressure Field at t= {round(solver2D_atm1(frame).time, 1)}")
+        ax2.set_title(rf"$\Delta$ Temperature Field at t= {round(solver2D_atm1(frame).time, 1)}")
 
         return ax1, ax2
 

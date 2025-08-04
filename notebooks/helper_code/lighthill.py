@@ -54,7 +54,7 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
                         continue
 
                     # For the moment let's skip summing values inside the conduit. 
-                    if Y[k] < 0:
+                    if Y[j] < 0:
                         continue
 
                     if t_ret >= 0 and t_ret < t_range[-1]:
@@ -76,12 +76,10 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
     return p_t
 
 
-def calculate_surface_integral(div_T, a, t_idx, t_range, x_obs, c0, points):
-    N_theta, N_phi = 50, 50
+def calculate_surface_integral(div_T, a, t_idx, t_range, x_obs, c0, points, N_theta=50, N_phi=50):
 
     theta = np.linspace(0, np.pi/3, N_theta)
     phi = np.linspace(0, 2*np.pi, N_phi)
-    a = 100 # [m]
 
     dphi = phi[1] - phi[0]
     dtheta = theta[1] - theta[0]
