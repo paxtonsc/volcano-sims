@@ -196,6 +196,6 @@ LinkedSolvers = [
 
 TimeStepping = {'FinalTime': 10, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 1200000,# Number of timesteps to run for
+ 'NumTimeSteps': 80e3,# Number of timesteps to run for
  'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }
