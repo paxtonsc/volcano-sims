@@ -125,3 +125,14 @@ def highpass(p, lowcut=1.0):
     b, a = signal.butter(order, low, btype='high')
 
     return signal.filtfilt(b, a, p)
+
+def lowpass_weighted_average(p, point_distance=1):
+
+    averaged_p = np.zeros_like(p)
+
+    for i in range(len(p)):
+        start = max(0, i - point_distance)
+        end = min(len(p), i + point_distance + 1)
+        averaged_p[i] = np.mean(p[start:end])
+
+    return averaged_p

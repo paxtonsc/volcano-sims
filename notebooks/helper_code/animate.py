@@ -162,7 +162,8 @@ def animate_conduit_pressure(
     max_water=1,
     max_density=2.6e3,
     max_fragmentation=600,
-    max_crystal=600,
+    max_crystal=100,
+    max_mach=2.0,
     show_p0_line=False,
     is_atm=False
 ):
@@ -208,7 +209,9 @@ def animate_conduit_pressure(
     max_fragmentation : float, optional
         Maximum fragmentation (kg/m³). Default is 600.
     max_crystal : float, optional
-        Maximum crystal partial density (kg/m³). Default is 600.
+        Maximum crystal mass fraction. Default is 100.
+    max_mach : float, optional
+        Maximum Mach number. Default is 2.0.
 
     Returns
     -------
@@ -226,7 +229,7 @@ def animate_conduit_pressure(
     ax5 = fig.add_subplot(255, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_water))
     ax6 = fig.add_subplot(256, autoscale_on=False, ylim=(y_max, y_min), xlim=(-1, max_slip))
     ax7 = fig.add_subplot(257, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_density))
-    ax8 = fig.add_subplot(258, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_crystal))
+    ax8 = fig.add_subplot(258, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_mach))
     ax9 = fig.add_subplot(259, autoscale_on=False, ylim=(y_max, y_min), xlim=(0, max_fragmentation))
     ax10 = fig.add_subplot(2, 5, 10, autoscale_on=False, ylim=(y_max, y_min), xlim=(-0.1, max_tau))
 
@@ -244,7 +247,7 @@ def animate_conduit_pressure(
     exsolved_water_line, = ax5.plot([], [], color="blue", label="Exsolved Water")
     new_state_line, = ax6.plot([], [], color="purple", label="Slip")
     rho_line, = ax7.plot([], [], label="Density")
-    crystal_line, = ax8.plot([], [], label="Crystals")
+    mach_line, = ax8.plot([], [], label="Mach")
     arhoF_line, = ax9.plot([], [], label="Melt")
     tau_line, = ax10.plot([], [], label="Tau Slip")
     tau_viscous_line, = ax10.plot([], [], label="Tau Viscous")
@@ -265,7 +268,7 @@ def animate_conduit_pressure(
     ax5.set_xlabel("Water Partial Density [kg/m³]")
     ax6.set_xlabel("Slip (slip/ρ_mix) [m]")
     ax7.set_xlabel("Density [kg/m³]")
-    ax8.set_xlabel("Crystal Partial Density [kg/m³]")
+    ax8.set_xlabel("Mach number [-]")
     ax9.set_xlabel("Fragmentation [kg/m³]")
     ax10.set_xlabel("Tau [MPa]")
 
@@ -291,7 +294,7 @@ def animate_conduit_pressure(
         for line in [
             pressure_line, velocity_line, sound_speed_line, viscosity_line,
             total_water_line, exsolved_water_line, new_state_line, rho_line,
-            crystal_line, arhoF_line, tau_line, tau_viscous_line
+            mach_line, arhoF_line, tau_line, tau_viscous_line
         ]:
             line.set_data([], [])
         for text in [time_text, pl_text, velocity_text, boundary_text]:
@@ -299,7 +302,7 @@ def animate_conduit_pressure(
         return (
             pressure_line, velocity_line, sound_speed_line, viscosity_line,
             total_water_line, exsolved_water_line, new_state_line, rho_line,
-            crystal_line, plug_boundary_line, arhoF_line, tau_line, tau_viscous_line,
+            mach_line, plug_boundary_line, arhoF_line, tau_line, tau_viscous_line,
             time_text, pl_text, velocity_text, boundary_text, p0_line
         )
 
@@ -348,7 +351,7 @@ def animate_conduit_pressure(
         exsolved_water_line.set_data(arhoWv.ravel(), x.ravel())
         new_state_line.set_data(slip.ravel(), x.ravel())
         rho_line.set_data(rho.ravel(), x.ravel())
-        crystal_line.set_data(arhoC.ravel(), x.ravel())
+        mach_line.set_data(u.ravel() / sound_speed.ravel(), x.ravel())
         arhoF_line.set_data(arhoF.ravel(), x.ravel())
 
         if not is_atm:
@@ -367,7 +370,7 @@ def animate_conduit_pressure(
         return (
             pressure_line, velocity_line, sound_speed_line, viscosity_line,
             total_water_line, exsolved_water_line, new_state_line, rho_line,
-            crystal_line, plug_boundary_line, arhoF_line, tau_line, tau_viscous_line,
+            mach_line, plug_boundary_line, arhoF_line, tau_line, tau_viscous_line,
             time_text, pl_text, velocity_text, boundary_text, p0_line
         )
 
