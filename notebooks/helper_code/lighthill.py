@@ -32,12 +32,13 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
     dv = (X[1] - X[0]) * (Y[1] - Y[0]) * (Z[1] - Z[0])
 
     print(f"DV size is {dv}")
+    print(f"X size is {len(X)}, Y size is {len(Y)}, Z size is {len(Z)}, t_range size is {len(t_range)}, file_index_list size is {len(file_index_list)}, x_obs size is {len(x_obs)}, points size is {len(points)}")
 
     rs = []
     src_values = []
     p_t = np.zeros(len(file_index_list))
 
-    for t_idx in range(len(file_index_list)):
+    for idx, t_idx in enumerate(file_index_list):
         for i in range(len(X)):
             for  j in range(len(Y)):
                 for k in range(len(Z)):
@@ -63,7 +64,7 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
                         src_val = interpolator([t_ret, Y[j], np.linalg.norm([X[i], Z[k]])])
 
                         if not np.isnan(src_val):
-                            p_t[t_idx] += (src_val / (4 * np.pi * r) ) * dv
+                            p_t[idx] += (src_val / (4 * np.pi * r) ) * dv
                             rs.append(r)
                             src_values.append(src_val)
 

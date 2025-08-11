@@ -19,7 +19,7 @@ Numerics = {
 Mesh = {
     "File" : None,
     "ElementShape" : "Segment",
-    "NumElemsX" : 10000,
+    "NumElemsX" : 1e4,
     "xmin" : 0,
     "xmax" : 1000,
 }

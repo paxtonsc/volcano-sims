@@ -19,7 +19,7 @@ Numerics = {'AVParameter': 30,
 # elements.
 Mesh = {'ElementShape': 'Segment',
  'File': None,
- 'NumElemsX': 1000,
+ 'NumElemsX': 10000,
  'xmax': 0,   # Top of the conduit is placed at -150 m for 2D coupling, but you can choose whatever if not coupling to 2D.
  'xmin': -1000.0
 }
@@ -101,7 +101,7 @@ SourceTerms = {'source1': {'Function': 'GravitySource', # Gravity
 
 
 Output = {'AutoPostProcess': False,
- 'Prefix': 'tungurahua_atm_1m',              # Output filename
+ 'Prefix': 'tungurahua_atm_01m',              # Output filename
  'WriteInitialSolution': True,
  'WriteInterval': run_globals.write_interval_1D,                                   # Output frequency (this many timesteps pass before file is written)
 }
@@ -200,6 +200,6 @@ LinkedSolvers = [
 
 TimeStepping = {'FinalTime': 10, # Final 
  'InitialTime': 0.0,
- 'NumTimeSteps': 20000,# Number of timesteps to run for
+ 'NumTimeSteps': 1e5,# Number of timesteps to run for
  'TimeStepper': 'RK3SR', # 'FE', # 'RK3SR',  # 4-step RK3 scheme that maximizes CFL stability region per function eval
 }
