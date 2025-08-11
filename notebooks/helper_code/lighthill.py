@@ -68,8 +68,6 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
                             rs.append(r)
                             src_values.append(src_val)
 
-        if t_idx % 10 == 0:
-            print(f"Finished time index {t_idx} of {len(file_index_list)}")
 
     print(f"Number of contributions: {len(rs)}") 
     print(f"r average: {np.average(rs)}")
