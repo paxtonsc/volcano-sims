@@ -37,6 +37,7 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
     rs = []
     src_values = []
     p_t = np.zeros(len(file_index_list))
+    src_values = []
 
     for idx, t_idx in enumerate(file_index_list):
         for i in range(len(X)):
@@ -47,21 +48,18 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
 
                     # distance from source to observation point
                     r = np.linalg.norm(x_obs - y_src)
-					# change?
+                    # change?
                     t_ret = t_range[t_idx] - r / c0
 
                     # a little hacky, but ignore any contributions with r the max value of Y
                     if np.linalg.norm([X[i], Z[k]]) > max_r:
                         continue
 
-                    # For the moment let's skip summing values inside the conduit. 
-                    if Y[j] < 0:
-                        continue
-
                     if t_ret >= 0 and t_ret < t_range[-1]:
                         interpolator = RegularGridInterpolator(points, source, method='linear', bounds_error=False, fill_value=0)
 
                         src_val = interpolator([t_ret, Y[j], np.linalg.norm([X[i], Z[k]])])
+                        src_values.append(src_val)
 
                         if not np.isnan(src_val):
                             p_t[idx] += (src_val / (4 * np.pi * r) ) * dv
@@ -71,6 +69,7 @@ def calculate_pressure_as_volume_integral(X, Y, Z, file_index_list, x_obs, point
 
     print(f"Number of contributions: {len(rs)}") 
     print(f"r average: {np.average(rs)}")
+    print(f"source value average: {np.average(np.asarray(src_values))}")
     #print(f"Max source value: {max(np.asarray(src_values))}")
     return p_t
 
@@ -92,7 +91,7 @@ def calculate_surface_integral(div_T, a, t_idx, t_range, x_obs, c0, points, N_th
             y = a * np.sin(phi[j]) * np.sin(theta[i])
             z = a * np.cos(phi[j])
 
-            r = np.linalg.norm(np.array([x, y, x]) - x_obs)
+            r = np.linalg.norm(np.array([x, y, z]) - x_obs)
 
             t_ret = t_range[t_idx] - r / c0
 
@@ -106,6 +105,44 @@ def calculate_surface_integral(div_T, a, t_idx, t_range, x_obs, c0, points, N_th
                 if not np.isnan(src_val_0) and not np.isnan(src_val_1):
                     p_t += 1/a * (src_val_0*z + src_val_1*np.linalg.norm([x, y])) / (4 * np.pi * r) * ds
     
+    return p_t
+
+
+def mario_surface_integral(a, t_idx, t_range, x_obs, c0, rho, v_r, v_z, sigma, points, N_theta=50, N_phi=50):
+
+    theta = np.linspace(0, np.pi/3, N_theta)
+    phi = np.linspace(0, 2*np.pi, N_phi)
+
+    dphi = phi[1] - phi[0]
+    dtheta = theta[1] - theta[0]
+
+    p_t = 0
+
+    for i in range(N_theta):
+        for j in range(N_phi):
+            ds = a**2 * np.sin(phi[j]) * dphi * dtheta
+            x = a * np.sin(phi[j]) * np.cos(theta[i])
+            y = a * np.sin(phi[j]) * np.sin(theta[i])
+            z = a * np.cos(phi[j])
+
+            r = np.linalg.norm(np.array([x, y, z]) - x_obs)
+
+            t_ret = t_range[t_idx] - r / c0
+
+            if t_ret > 0 and t_ret < t_range[-1]:
+
+                v_r_interpolator = RegularGridInterpolator(points, v_r, method='linear', bounds_error=False, fill_value=0)
+                v_z_interpolator = RegularGridInterpolator(points, v_z, method='linear', bounds_error=False, fill_value=0)
+                sigma_interpolator = RegularGridInterpolator(points, sigma, method='linear', bounds_error=False, fill_value=0)
+                rho_interpolator = RegularGridInterpolator(points, rho, method='linear', bounds_error=False, fill_value=0)
+
+                v_r = v_r_interpolator([t_ret, z, np.linalg.norm([x, y])])
+                v_z = v_z_interpolator([t_ret, z, np.linalg.norm([x, y])])
+                sigma = sigma_interpolator([t_ret, z, np.linalg.norm([x, y])])
+                rho = rho_interpolator([t_ret, z, np.linalg.norm([x, y])])
+
+                p_t += 1/a * (v_r*z + v_z*np.linalg.norm([x, y])) / (4 * np.pi * r) * ds
+
     return p_t
 
 def highpass(p, lowcut=1.0):
