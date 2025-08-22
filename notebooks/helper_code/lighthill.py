@@ -39,8 +39,6 @@ def compute_monopole_dipole_flux(x_obs, t, x_prime, dS, n, c0, t_f, rho_func, v_
         if t_ret < 0 or t_ret + dt > t_f:
             continue
 
-        #print(f"made it past : {t} at k {k}")
-        
         # Interpolate the density and velocity at t=t_ret and x_prime[k]
         rho = rho_func(t_ret, x_prime_rz[0], x_prime_rz[1])
         v = v_func(t_ret, x_prime_rz[0], x_prime_rz[1])
