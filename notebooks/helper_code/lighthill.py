@@ -1,6 +1,103 @@
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator
 from scipy import signal
+from .coordinate_transforms import xyz_to_rz, rz_to_xyz
+
+
+def compute_monopole_dipole_flux(x_obs, t, x_prime, dS, n, c0, t_f, rho_func, v_func, sigma_func, dt=0.05, dx=0.1):
+    """
+    x_obs - Observation point (2D array of shape (2,))
+    t - Time at which to compute the pressure
+    x_prime - Source points (2D array of shape (N, 2))
+    dS - Surface element area at each source point (1D array of shape (N,))
+    n - Normal vector at each source point (2D array of shape (N, 2))
+    c0 - Speed of sound
+    t_f - Final time
+    rho_func - lambda function that outputs rho given [t, r, z]
+    v_func - lambda function that outputs v = [v_r, v_z] given [t, r, z]
+    sigma_func - lambda function that outputs stress tensor of shape [2, 2] given [t, r, z]
+    points - Points for interpolation grid
+    dt - Time step for interpolation (default: 0.01)
+    dx - Spatial step for interpolation (default: 0.01)m.
+    """
+
+    N = len(x_prime)
+
+    M_mon_dt_vec = np.zeros(N)
+    D_div_vec = np.zeros(N)
+
+    for k in range(N):
+        # Compute the distance from the source to the observation point
+        r = np.linalg.norm(x_obs - x_prime[k])
+
+        x_prime_rz = xyz_to_rz(x_prime[k])
+        n_rz = xyz_to_rz(n[k])
+        
+        # Compute the time of arrival at the observation point
+        t_ret = t - r / c0
+        
+        if t_ret < 0 or t_ret + dt > t_f:
+            continue
+
+        #print(f"made it past : {t} at k {k}")
+        
+        # Interpolate the density and velocity at t=t_ret and x_prime[k]
+        rho = rho_func(t_ret, x_prime_rz[0], x_prime_rz[1])
+        v = v_func(t_ret, x_prime_rz[0], x_prime_rz[1])
+
+        # Interpolate the density and velocity at t=t_ret + dt and x_prime[k]
+        rho_plus = rho_func(t_ret + dt, x_prime_rz[0], x_prime_rz[1])
+        v_plus = np.nan_to_num(v_func(t_ret + dt, x_prime_rz[0], x_prime_rz[1]))
+
+        # Calculate the time derivative of the monopole moment.
+        # Do calculations in spherical coordinates
+        rho_v_n = rho * np.dot(v, n_rz)
+        rho_v_n_plus = rho_plus * np.dot(v_plus, n_rz)
+
+        # Calculate the monopole moment time derivative
+        M_mon_dt_vec[k] = (rho_v_n_plus - rho_v_n) / dt / (4 * r * np.pi) * dS[k]
+
+        # Calculate the divergence of the dipole term.
+        for i in range(3):  # Loop over x and y dimensions for 2D divergence
+            x_plus = x_prime[k].copy()
+            x_plus[i] += dx
+            x_plus_rz = xyz_to_rz(x_plus)
+
+            r_plus = np.linalg.norm(x_obs - x_plus)
+            t_ret_plus = t - r_plus / c0
+
+            x_minus = x_prime[k].copy()
+            x_minus[i] -= dx
+            x_minus_rz = xyz_to_rz(x_minus)
+
+            r_minus = np.linalg.norm(x_obs - x_minus)
+            t_ret_minus = t - r_minus / c0
+
+            # Interpolate in polar coordinates.
+            rho = rho_func(t_ret_plus, x_plus_rz[0], x_plus_rz[1])
+            sigma = sigma_func(t_ret_plus, x_plus_rz[0], x_plus_rz[1])
+            v_rz = v_func(t_ret_plus, x_plus_rz[0], x_plus_rz[1])
+
+            # Convert velocity from cylindrical -> cartesian
+            v = rz_to_xyz(v_rz.flatten(), n[k])
+
+            # Compute force term: n[k] · (ρ v v + σ) / (r_plus)
+            force_plus = np.sum(n[k] * (rho * np.outer(v, v) + sigma), axis=1) / r_plus
+
+            rho = rho_func(t_ret_minus, x_minus_rz[0], x_minus_rz[1])
+            sigma = sigma_func(t_ret_minus, x_minus_rz[0], x_minus_rz[1])
+            v_rz = v_func(t_ret_minus, x_minus_rz[0], x_minus_rz[1])
+            
+            # Convert velocity from cylindrical -> cartesian
+            v = rz_to_xyz(v_rz.flatten(), n[k])
+
+            # Compute force term: n[k] · (ρ v v + σ) / (r_minus)
+            force_minus = np.sum(n[k] * (rho * np.outer(v, v) + sigma), axis=1) / r_minus
+
+            # Accumulate divergence for component i
+            D_div_vec[k] += (force_plus[i] - force_minus[i]) / (2 * dx) / (4 * np.pi) * dS[k]
+
+    return np.sum(M_mon_dt_vec), np.sum(D_div_vec), M_mon_dt_vec, D_div_vec
 
 
 def compute_ref_mapping(x_tri):

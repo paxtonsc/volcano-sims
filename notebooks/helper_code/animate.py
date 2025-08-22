@@ -4,6 +4,8 @@ import os
 from matplotlib import animation
 import meshing.tools as mesh_tools
 from processing import readwritedatafiles
+from matplotlib.colors import TwoSlopeNorm
+from matplotlib.animation import FuncAnimation
 
 # Base path for file structure
 BASE_PATH = "/Users/paxton/git"
@@ -12,6 +14,45 @@ SOURCE_DIR = f"{BASE_PATH}/quail_volcano/src"
 # Set working directory to source
 os.chdir(SOURCE_DIR)
 
+def plot_surface_integral_contributions(array, name, x_prime, normals, times, t_f=100, t_interval=5):
+    # --- Setup figure ---
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    # Define normalization for colors
+    norm = TwoSlopeNorm(vmax=np.percentile(array, 90), vcenter=0, vmin=np.percentile(array,10))
+
+    # Initial scatter plot
+    sc = ax.scatter(x_prime[:, 0], x_prime[:, 2],
+                    c=array[0, :], cmap='PiYG', norm=norm)
+
+    # Initial quiver plot
+    scale_factor = 1
+    quiv = ax.quiver(x_prime[:, 0], x_prime[:, 2],
+                    normals[:, 0], normals[:, 2],
+                    color='black', scale=scale_factor, scale_units='xy', angles='xy')
+
+    # Add colorbar
+    cbar = plt.colorbar(sc, ax=ax, shrink=0.9, aspect=5, label='Value')
+
+    # Label axes
+    ax.set_xlabel('X')
+    ax.set_ylabel('Z')
+    ax.set_aspect('equal')
+
+    # --- Animation update function ---
+    def update(frame):
+        # Update scatter colors
+        sc.set_array(array[frame, :])
+        # Update title with current time
+        ax.set_title(f'{name} (receiver time={times[frame]:.2f})')
+        return sc,
+
+    # --- Create animation ---
+    ani = FuncAnimation(fig, update, frames=np.arange(0, t_f,t_interval),
+                        interval=200, blit=False, repeat=True)
+    
+    plt.close()
+    return ani
 
 def animate_melt_atmosphere_combination(
     melt_solver_from_i,
